@@ -1,0 +1,46 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('biaya')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Tambah Biaya</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="screen-content">
+  <div class="tp-form">
+    <div class="tp-field-group">
+      <label class="tp-label">Tanggal</label>
+      <input type="date" id="biaya-tanggal" class="tp-input" />
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Kategori</label>
+      <div class="tp-select-wrap tp-select-full">
+        <select id="biaya-kategori" class="tp-select">
+          <option value="">Pilih Kategori</option>
+          <option>Operasional</option><option>Gaji</option>
+          <option>Listrik/Air</option><option>Sewa</option><option>Lainnya</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Nominal</label>
+      <input type="number" id="biaya-nominal" class="tp-input" placeholder="0" min="0" />
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Tipe</label>
+      <div class="tp-select-wrap tp-select-full">
+        <select id="biaya-tipe" class="tp-select">
+          <option value="biaya">Biaya / Pengeluaran</option>
+          <option value="pendapatan">Pendapatan Lain</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Keterangan</label>
+      <textarea id="biaya-keterangan" class="tp-textarea" rows="3" placeholder="Keterangan..."></textarea>
+    </div>
+  </div>
+  <div style="height:16px;"></div>
+</div>
+<div class="tp-footer">
+  <button class="btn-simpan" onclick="simpanBiaya()">Simpan</button>
+</div>

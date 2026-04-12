@@ -1,0 +1,55 @@
+<div class="pos-navbar">
+  <button class="pos-nav-btn" onclick="switchScreen('pengaturan')">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+  <div class="pos-search-box">
+    <i class="fa-solid fa-magnifying-glass pos-search-icon"></i>
+    <input type="text" class="pos-search-input" placeholder="Cari produk..." id="posSearchInput" oninput="filterPosProducts()" />
+  </div>
+  <button class="pos-nav-btn" onclick="openScanner('pos-search')">
+    <i class="fa-solid fa-barcode"></i>
+  </button>
+  <button class="pos-nav-btn" onclick="openPosCamera()">
+    <i class="fa-solid fa-camera"></i>
+  </button>
+  <button class="pos-nav-btn" onclick="switchScreen('tambah-produk')">
+    <i class="fa-solid fa-circle-plus"></i>
+  </button>
+  <button class="pos-nav-btn" onclick="switchScreen('pos-settings')">
+    <i class="fa-solid fa-gear"></i>
+  </button>
+</div>
+
+<div class="pos-category-bar">
+  <button class="pos-cat-btn active" onclick="filterCategory(this, 'semua')">Semua</button>
+  <button class="pos-cat-btn" onclick="filterCategory(this, 'makanan')">Makanan</button>
+  <button class="pos-cat-btn" onclick="filterCategory(this, 'minuman')">Minuman</button>
+  <button class="pos-cat-btn" onclick="filterCategory(this, 'snack')">Snack</button>
+  <button class="pos-cat-btn" onclick="filterCategory(this, 'lainnya')">Lainnya</button>
+  <div class="pos-view-toggle" onclick="showToast('Ganti Tampilan')">
+    <i class="fa-solid fa-list"></i>
+  </div>
+</div>
+
+<div class="screen-content" id="posProductArea">
+  <div class="pos-empty-state">
+    <p class="pos-empty-title">Belum ada produk</p>
+    <p class="pos-empty-sub">Tambah produk terlebih dahulu</p>
+  </div>
+</div>
+
+<div class="pos-cart-bar" onclick="switchScreen('keranjang')">
+  <div class="pos-cart-left">
+    <button class="pos-cart-delete" onclick="event.stopPropagation(); clearCart()">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+    <button class="pos-cart-add" onclick="event.stopPropagation(); switchScreen('keranjang')">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+  </div>
+  <div class="pos-cart-info">
+    <span class="pos-cart-count" id="cartCount">0 Items</span>
+    <span class="pos-cart-total" id="cartTotal">Rp0</span>
+    <i class="fa-solid fa-chevron-right pos-cart-arrow"></i>
+  </div>
+</div>

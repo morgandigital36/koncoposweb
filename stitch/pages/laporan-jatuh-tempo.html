@@ -1,0 +1,35 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('laporan')"></i>
+  <span class="topbar-title">Jatuh Tempo</span>
+  <i class="fa-solid fa-download topbar-icon" onclick="exportLaporanJatuhTempo()"></i>
+</div>
+<div class="screen-content">
+  <div class="laporan-filter-bar">
+    <div class="form-group">
+      <label>Filter Status</label>
+      <select id="jt-filter" class="form-input" onchange="renderLaporanJatuhTempo()">
+        <option value="semua">Semua</option>
+        <option value="terlambat">Terlambat</option>
+        <option value="segera">Segera (≤7 hari)</option>
+        <option value="normal">Normal</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Tipe</label>
+      <select id="jt-tipe" class="form-input" onchange="renderLaporanJatuhTempo()">
+        <option value="semua">Semua</option>
+        <option value="piutang">Piutang</option>
+        <option value="hutang">Hutang</option>
+      </select>
+    </div>
+    <div class="laporan-export-btns">
+      <button class="btn-export" onclick="exportJatuhTempoPDF()">
+        <i class="fa-solid fa-file-pdf"></i> PDF
+      </button>
+      <button class="btn-export" onclick="exportJatuhTempoExcel()">
+        <i class="fa-solid fa-file-excel"></i> Excel
+      </button>
+    </div>
+  </div>
+  <div id="laporan-jatuh-tempo-body"></div>
+</div>

@@ -1,0 +1,161 @@
+<div class="topbar" style="background:var(--primary);">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('kasir')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Tambah Kasir</span>
+  <span style="width:24px;"></span>
+</div>
+
+<div class="screen-content" style="padding:0;">
+  <div class="kasir-form-container">
+    <!-- Basic Info -->
+    <div class="kasir-form-section">
+      <div class="kasir-form-group">
+        <label class="kasir-label">Nama (Wajib)</label>
+        <input type="text" id="kasir-nama" class="kasir-input" placeholder="Nama lengkap kasir..." />
+      </div>
+      
+      <div class="kasir-form-group">
+        <label class="kasir-label">Telp</label>
+        <input type="tel" id="kasir-telp" class="kasir-input" placeholder="08xx..." />
+      </div>
+      
+      <div class="kasir-form-group">
+        <label class="kasir-label">Email (Untuk reset password)</label>
+        <input type="email" id="kasir-email" class="kasir-input" placeholder="email@example.com" />
+      </div>
+      
+      <div class="kasir-form-group">
+        <label class="kasir-label">Username (Wajib)</label>
+        <input type="text" id="kasir-username" class="kasir-input" placeholder="Username untuk login..." />
+      </div>
+      
+      <div class="kasir-form-group">
+        <label class="kasir-label">Password</label>
+        <input type="password" id="kasir-password" class="kasir-input" placeholder="Minimal 6 karakter..." />
+      </div>
+      
+      <div class="kasir-form-group">
+        <label class="kasir-label">Konfirmasi Password</label>
+        <input type="password" id="kasir-password-confirm" class="kasir-input" placeholder="Ketik ulang password..." />
+      </div>
+    </div>
+
+    <!-- Permissions -->
+    <div class="kasir-form-section kasir-permissions">
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh ubah POS</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-pos" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh mengubah harga jual</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-harga" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh mengubah diskon</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-diskon" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Print Draft</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-print-draft" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Mengolah Master</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-master" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh Ubah Tanggal</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-tanggal" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Biaya & Pendapatan</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-biaya" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh Ubah Biaya & Pendapatan</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-biaya" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Pembelian</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-pembelian" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Print Pembelian</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-print-pembelian" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Laporan</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-laporan" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Riwayat POS</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-riwayat" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Rekapan</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-rekapan" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tambah Produk Manual</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-tambah-produk" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="kasir-footer">
+  <button class="kasir-btn-simpan" onclick="simpanKasirBaru()">Simpan</button>
+</div>

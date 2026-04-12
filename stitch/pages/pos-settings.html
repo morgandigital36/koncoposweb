@@ -1,0 +1,52 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pos')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Pengaturan Tampilan</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="screen-content">
+  <div class="pos-settings-form">
+    <div class="pos-setting-row">
+      <label>Mode Tampilan</label>
+      <div class="pos-setting-select-wrap">
+        <select class="pos-setting-select" id="ps-mode">
+          <option>Tampil Semua</option><option>Stok Ada</option><option>Favorit</option>
+        </select>
+      </div>
+    </div>
+    <div class="pos-setting-row">
+      <label>Jenis Tampilan</label>
+      <div class="pos-setting-select-wrap">
+        <select class="pos-setting-select" id="ps-jenis">
+          <option>List</option><option>Grid</option>
+        </select>
+      </div>
+    </div>
+    <div class="pos-setting-row">
+      <label>Stok Produk</label>
+      <div class="pos-setting-select-wrap">
+        <select class="pos-setting-select" id="ps-stok">
+          <option>Auto</option><option>Tampil</option><option>Sembunyikan</option>
+        </select>
+      </div>
+    </div>
+    <div class="pos-setting-row">
+      <label>Kategori</label>
+      <div class="pos-setting-select-wrap">
+        <select class="pos-setting-select" id="ps-kategori">
+          <option>Kesamping</option><option>Kebawah</option><option>Sembunyikan</option>
+        </select>
+      </div>
+    </div>
+    <div class="pos-setting-row">
+      <label>Urutan Produk</label>
+      <div class="pos-setting-select-wrap">
+        <select class="pos-setting-select" id="ps-urutan">
+          <option>Abjad</option><option>Terbaru</option><option>Terlama</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="pos-settings-footer">
+    <button class="btn-simpan" onclick="showToast('Pengaturan disimpan!'); switchScreen('pos')">Simpan</button>
+  </div>
+</div>

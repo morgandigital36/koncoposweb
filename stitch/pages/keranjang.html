@@ -1,0 +1,206 @@
+<!-- TOPBAR -->
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pos')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Keranjang</span>
+  <span id="cart-topbar-total" style="font-size:15px;font-weight:700;color:white;">Rp0</span>
+  <i class="fa-solid fa-gear topbar-icon" onclick="switchScreen('pos-settings')" style="font-size:18px;margin-left:10px;"></i>
+</div>
+
+<!-- SCROLLABLE BODY -->
+<div class="screen-content" id="cart-scroll-body">
+
+  <!-- PRODUK LIST -->
+  <div id="cart-list">
+    <div class="pos-empty-state">
+      <i class="fa-solid fa-cart-shopping" style="font-size:48px;color:#ddd;margin-bottom:8px;"></i>
+      <p class="pos-empty-title">Keranjang kosong</p>
+      <p class="pos-empty-sub">Tambah produk dari POS</p>
+    </div>
+  </div>
+
+  <!-- RINGKASAN HARGA (hidden until cart has items) -->
+  <div id="cart-price-summary" style="display:none;"></div>
+
+  <!-- TOTAL MODAL & LABA -->
+  <div id="cart-modal-laba" style="display:none;" class="cart-modal-laba-section">
+    <div class="cart-price-row">
+      <span style="color:var(--text-mid);">Total Modal</span>
+      <span id="cart-total-modal" style="color:var(--primary);font-weight:600;">Rp0</span>
+    </div>
+    <div class="cart-price-row">
+      <span style="color:var(--text-mid);">Total Laba</span>
+      <span id="cart-total-laba" style="color:var(--primary);font-weight:600;">Rp0</span>
+    </div>
+  </div>
+
+      <!-- FORM TRANSAKSI -->
+  <div id="cart-form-section" style="display:none;" class="cart-form-section">
+    <div class="cart-form-card">
+      <div class="cart-form-grid">
+        <div class="cart-form-item" onclick="bukaPickerTanggal('tgl-transaksi')">
+          <i class="fa-regular fa-calendar"></i>
+          <span id="label-tgl-transaksi" class="cart-form-label">Tgl Transaksi</span>
+        </div>
+        <div class="cart-form-item" onclick="bukaPickerTanggal('tgl-jth-tempo')">
+          <i class="fa-regular fa-calendar-check"></i>
+          <span id="label-tgl-jth-tempo" class="cart-form-label">Tgl Jth Tempo</span>
+        </div>
+        <div class="cart-form-item" onclick="bukaPickerPelanggan()">
+          <i class="fa-regular fa-user"></i>
+          <span id="label-pelanggan" class="cart-form-label">Pelanggan</span>
+        </div>
+        <div class="cart-form-item" onclick="bukaInputNoMeja()">
+          <i class="fa-solid fa-border-all"></i>
+          <span id="label-no-meja" class="cart-form-label">No. Meja</span>
+        </div>
+        <div class="cart-form-item" onclick="bukaPickerJenisPenjualan()">
+          <i class="fa-solid fa-list-ul"></i>
+          <span id="label-jenis-penjualan" class="cart-form-label">Jenis Penjualan</span>
+        </div>
+        <div class="cart-form-item" onclick="bukaPickerSales()">
+          <i class="fa-regular fa-circle-user"></i>
+          <span id="label-sales" class="cart-form-label">Sales</span>
+        </div>
+      </div>
+      <!-- Keterangan full width -->
+      <div class="cart-form-item cart-form-full" onclick="document.getElementById('cart-keterangan').focus()">
+        <i class="fa-regular fa-pen-to-square"></i>
+        <input type="text" id="cart-keterangan" class="cart-keterangan-input" placeholder="Keterangan" />
+      </div>
+    </div>
+  </div>
+
+  <div style="height:8px;"></div>
+</div>
+
+<!-- FOOTER BAYAR (sticky) -->
+<div id="cart-footer" class="cart-footer" style="display:none;">
+  <button class="cart-btn-belum-bayar" onclick="prosesCheckoutPiutang()">
+    <i class="fa-solid fa-file-invoice-dollar"></i>
+    Belum Bayar
+  </button>
+  <button class="cart-btn-bayar" onclick="bukaModalBayar()">
+    <i class="fa-solid fa-cash-register"></i>
+    Bayar
+  </button>
+</div>
+
+<!-- MODAL BAYAR -->
+<div id="modal-bayar" class="modal-overlay" style="display:none;" onclick="tutupModalBayar()">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="gap:0;padding:16px 16px 28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <span style="font-size:16px;font-weight:700;color:var(--text-dark);">Pembayaran</span>
+      <i class="fa-solid fa-xmark" style="font-size:18px;color:var(--text-light);cursor:pointer;" onclick="tutupModalBayar()"></i>
+    </div>
+    <div class="bayar-total-row">
+      <span style="color:var(--text-mid);font-size:13px;">Total Tagihan</span>
+      <span id="bayar-total-amount" style="font-size:22px;font-weight:800;color:var(--primary);">Rp0</span>
+    </div>
+    <div class="bayar-method-grid">
+      <div class="bayar-method-btn active" onclick="selectPayMethod(this,'Tunai')">
+        <i class="fa-solid fa-money-bill-wave"></i><span>Tunai</span>
+      </div>
+      <div class="bayar-method-btn" onclick="selectPayMethod(this,'Transfer')">
+        <i class="fa-solid fa-building-columns"></i><span>Transfer</span>
+      </div>
+      <div class="bayar-method-btn" onclick="selectPayMethod(this,'QRIS')">
+        <i class="fa-solid fa-qrcode"></i><span>QRIS</span>
+      </div>
+      <div class="bayar-method-btn" onclick="selectPayMethod(this,'Piutang')">
+        <i class="fa-solid fa-file-invoice-dollar"></i><span>Piutang</span>
+      </div>
+    </div>
+    <div id="bayar-tunai-section">
+      <div style="font-size:11px;color:var(--text-light);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Uang Diterima</div>
+      <div class="bayar-input-row">
+        <span style="font-size:16px;font-weight:600;color:var(--text-mid);flex-shrink:0;">Rp</span>
+        <input type="number" id="bayar-uang" class="bayar-input" placeholder="0" oninput="hitungKembalian()" />
+      </div>
+      <div class="bayar-quick-btns">
+        <button class="bayar-quick-btn" onclick="setNominalCepat(5000)">5rb</button>
+        <button class="bayar-quick-btn" onclick="setNominalCepat(10000)">10rb</button>
+        <button class="bayar-quick-btn" onclick="setNominalCepat(20000)">20rb</button>
+        <button class="bayar-quick-btn" onclick="setNominalCepat(50000)">50rb</button>
+        <button class="bayar-quick-btn" onclick="setNominalCepat(100000)">100rb</button>
+        <button class="bayar-quick-btn" onclick="setNominalCepat(0,true)">Pas</button>
+      </div>
+      <div class="bayar-kembalian-row">
+        <span>Kembalian</span>
+        <span id="bayar-kembalian" style="font-size:16px;font-weight:700;color:var(--primary);">Rp0</span>
+      </div>
+    </div>
+    <button class="btn-simpan" style="margin-top:12px;" onclick="prosesCheckout()">
+      <i class="fa-solid fa-check" style="margin-right:6px;"></i>Bayar Sekarang
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: TANGGAL PICKER -->
+<div id="modal-tgl-picker" class="modal-overlay" style="display:none;" onclick="tutupModalTgl()">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="gap:0;padding:16px 16px 28px;">
+    <div class="modal-sheet-header">
+      <span id="modal-tgl-title">Tanggal</span>
+      <i class="fa-solid fa-xmark modal-close-icon" onclick="tutupModalTgl()"></i>
+    </div>
+    <input type="date" id="input-tgl-picker" class="cart-date-input" />
+    <button class="btn-simpan" style="margin-top:12px;" onclick="pilihTanggal()">Pilih</button>
+  </div>
+</div>
+
+<!-- MODAL: PILIH PELANGGAN -->
+<div id="modal-pilih-pelanggan" class="modal-overlay" style="display:none;" onclick="tutupModalPelanggan()">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="gap:0;padding:16px 16px 28px;max-height:70vh;overflow-y:auto;">
+    <div class="modal-sheet-header">
+      <span>Pilih Pelanggan</span>
+      <i class="fa-solid fa-xmark modal-close-icon" onclick="tutupModalPelanggan()"></i>
+    </div>
+    <div class="laporan-search-bar" style="margin:8px 0;">
+      <i class="fa-solid fa-magnifying-glass" style="color:var(--text-light);font-size:13px;"></i>
+      <input type="text" id="search-pelanggan-modal" class="laporan-search-input" placeholder="Cari pelanggan..." oninput="renderPelangganModal()" />
+    </div>
+    <div id="pelanggan-modal-list"></div>
+    <button class="tp-outline-btn" style="margin-top:8px;" onclick="pilihPelanggan(null,'')">
+      <i class="fa-solid fa-user-slash"></i> Tanpa Pelanggan
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: NO MEJA -->
+<div id="modal-no-meja" class="modal-overlay" style="display:none;" onclick="tutupModalMeja()">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="gap:0;padding:16px 16px 28px;">
+    <div class="modal-sheet-header">
+      <span>No. Meja</span>
+      <i class="fa-solid fa-xmark modal-close-icon" onclick="tutupModalMeja()"></i>
+    </div>
+    <div class="bayar-input-row" style="margin-top:8px;">
+      <i class="fa-solid fa-border-all" style="color:var(--text-mid);"></i>
+      <input type="text" id="input-no-meja" class="bayar-input" placeholder="Nomor meja..." style="font-size:16px;" />
+    </div>
+    <button class="btn-simpan" style="margin-top:12px;" onclick="simpanNoMeja()">Simpan</button>
+  </div>
+</div>
+
+<!-- MODAL: JENIS PENJUALAN -->
+<div id="modal-jenis-penjualan" class="modal-overlay" style="display:none;" onclick="tutupModalJenis()">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="gap:0;padding:16px 16px 28px;">
+    <div class="modal-sheet-header">
+      <span>Jenis Penjualan</span>
+      <i class="fa-solid fa-xmark modal-close-icon" onclick="tutupModalJenis()"></i>
+    </div>
+    <div id="jenis-penjualan-modal-list" style="margin-top:8px;"></div>
+  </div>
+</div>
+
+<!-- MODAL: PILIH SALES -->
+<div id="modal-pilih-sales" class="modal-overlay" style="display:none;" onclick="tutupModalSales()">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="gap:0;padding:16px 16px 28px;max-height:70vh;overflow-y:auto;">
+    <div class="modal-sheet-header">
+      <span>Pilih Sales</span>
+      <i class="fa-solid fa-xmark modal-close-icon" onclick="tutupModalSales()"></i>
+    </div>
+    <div id="sales-modal-list" style="margin-top:8px;"></div>
+    <button class="tp-outline-btn" style="margin-top:8px;" onclick="pilihSales(null,'')">
+      <i class="fa-solid fa-user-slash"></i> Tanpa Sales
+    </button>
+  </div>
+</div>

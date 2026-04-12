@@ -1,0 +1,77 @@
+<div class="topbar">
+  <span class="topbar-title">Pengaturan</span>
+</div>
+<div class="screen-content">
+  <div class="settings-group-label">Pengguna</div>
+  <div class="list-menu">
+    <div class="list-item" onclick="switchScreen('outlet')">
+      <div class="list-item-left"><i class="fa-solid fa-store list-icon"></i><span>Outlet</span></div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+    <div class="list-item" onclick="switchScreen('akun')">
+      <div class="list-item-left"><i class="fa-solid fa-user list-icon"></i><span>Akun</span></div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+    <div class="list-item" onclick="switchScreen('ganti-password')">
+      <div class="list-item-left"><i class="fa-solid fa-lock list-icon"></i><span>Ganti Password</span></div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+  </div>
+
+  <div class="settings-group-label">Master</div>
+  <div class="list-menu">
+    <div class="list-item" onclick="switchScreen('master-produk')"><span>Produk</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('kategori-produk')"><span>Kategori Produk</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('kategori-biaya')"><span>Kategori Biaya/Pendapatan</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('supplier')"><span>Supplier</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('pelanggan')"><span>Pelanggan</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('sales')"><span>Sales</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('jenis-penjualan')"><span>Jenis Penjualan</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('metode-pembayaran')"><span>Metode Pembayaran</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('kurir')"><span>Kurir</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="switchScreen('kasir')">
+      <div><div>Kasir</div><div class="list-subtitle">Tidak tampil harga beli dan laba rugi</div></div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+  </div>
+
+  <div class="settings-group-label">Lain-lain</div>
+  <div class="list-menu">
+    <div class="list-item" onclick="switchScreen('tentang')"><span>Informasi</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="showToast('Mengunduh data lokal...')">
+      <div><div>Download Local Master</div><div class="list-subtitle">Untuk menyimpan invoice di local ketika tidak ada internet.</div></div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+    <div class="list-item" onclick="switchScreen('sync-settings')">
+              <div class="list-item-left">
+                <i class="fa-solid fa-cloud list-icon" style="color:#3498db;"></i>
+                <div>
+                  <div>Sinkronisasi Google Sheet</div>
+                  <div class="list-subtitle">Hubungkan data ke Google Sheets</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+            <div class="list-item" onclick="switchScreen('pengaturan-printer')"><span>Pengaturan Printer</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="showToast('Fitur Premium segera hadir!')"><span>Fitur Premium</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="showToast('Iklan sudah dihapus!')"><span>Hapus Iklan (Gratis)</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item danger-item" onclick="konfirmasiHapusData()"><span>Hapus Data</span><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="list-item" onclick="showToast('Terima kasih atas dukungannya! ⭐')">
+      <div><div>Kasih Bintang</div><div class="list-subtitle">Dukung kami dengan ulasan positif</div></div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+    <div class="list-item" onclick="switchScreen('tentang')"><span>Tentang Kami</span><i class="fa-solid fa-chevron-right"></i></div>
+  </div>
+  <div style="height:20px;"></div>
+
+  <!-- Logout -->
+  <div class="list-menu" style="margin-bottom:20px;">
+    <div class="list-item danger-item" onclick="doLogout()">
+      <div class="list-item-left">
+        <i class="fa-solid fa-right-from-bracket list-icon"></i>
+        <span>Keluar / Logout</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+  </div>
+</div>

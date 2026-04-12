@@ -1,0 +1,13 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('laporan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Persediaan Stok</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="laporan-filter-bar">
+  <input type="text" class="laporan-search-input" id="lpers-search" placeholder="Cari produk..." oninput="renderLaporanPersediaan()" />
+</div>
+<div class="screen-content" id="laporan-persediaan-body">
+  <div class="pos-empty-state">
+    <p class="pos-empty-title">Memuat data...</p>
+  </div>
+</div>

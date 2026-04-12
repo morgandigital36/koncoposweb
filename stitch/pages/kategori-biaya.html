@@ -1,0 +1,25 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pengaturan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Kategori Biaya/Pendapatan</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="screen-content" id="kat-biaya-list"></div>
+<button class="crud-fab" onclick="bukaFormKategoriBiaya()">
+  <i class="fa-solid fa-plus"></i>
+</button>
+
+<div id="modal-kat-biaya-form" class="modal-overlay" style="display:none;" onclick="tutupFormKategoriBiaya()">
+  <div class="modal-sheet crud-form-sheet" onclick="event.stopPropagation()">
+    <div class="crud-form-header">
+      <span id="form-kat-biaya-title">Tambah Kategori</span>
+      <i class="fa-solid fa-xmark modal-close-icon" onclick="tutupFormKategoriBiaya()"></i>
+    </div>
+    <div class="tp-form" style="margin-bottom:12px;">
+      <div class="tp-field-group">
+        <label class="tp-label">Nama Kategori *</label>
+        <input type="text" id="form-kat-biaya-nama" class="tp-input" placeholder="Contoh: Operasional, Gaji..." />
+      </div>
+    </div>
+    <button class="btn-simpan" onclick="simpanKategoriBiaya()">Simpan</button>
+  </div>
+</div>

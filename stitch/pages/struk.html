@@ -1,0 +1,58 @@
+<!-- Audio notif kas -->
+<audio id="audio-kaching" src="https://res.cloudinary.com/dj3w0d28k/video/upload/v1775984028/modestas123123-cash-register-kaching-sound-effect-125042_1_srcssg.mp3" preload="auto"></audio>
+
+<!-- Topbar minimal -->
+<div class="struk-topbar">
+  <button class="struk-topbar-btn" onclick="switchScreen('pos')" title="Kembali">
+    <i class="fa-solid fa-arrow-down-to-bracket" style="transform:rotate(90deg);"></i>
+  </button>
+  <div style="flex:1;"></div>
+  <button class="struk-topbar-btn" id="btn-toggle-sound" onclick="toggleStrukSound()" title="Suara">
+    <i class="fa-solid fa-volume-high" id="icon-sound"></i>
+  </button>
+</div>
+
+<!-- Scrollable invoice body -->
+<div class="screen-content" id="struk-scroll" style="background:#f0f0f0;">
+
+  <!-- Success header -->
+  <div class="struk-success-header">
+    <div class="struk-check-circle">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <div class="struk-berhasil-title">Berhasil</div>
+    <div class="struk-kembalian-label">
+      Kembalian <span id="struk-kembalian-val" style="font-size:22px;font-weight:800;">Rp0</span>
+    </div>
+  </div>
+
+  <!-- Invoice paper -->
+  <div class="struk-paper" id="struk-paper">
+    <!-- Rendered by renderStruk() -->
+  </div>
+
+  <div style="height:12px;"></div>
+</div>
+
+<!-- Bottom action bar -->
+<div class="struk-bottom-bar">
+  <!-- Row 1: Print, Share, WA, WA -->
+  <div class="struk-action-row">
+    <button class="struk-action-btn struk-action-print" onclick="cetakStruk()">
+      <i class="fa-solid fa-print"></i> Print
+    </button>
+    <button class="struk-action-btn struk-action-icon" onclick="shareStruk()" title="Bagikan">
+      <i class="fa-solid fa-share-nodes"></i>
+    </button>
+    <button class="struk-action-btn struk-action-icon" onclick="shareWhatsapp()" title="WhatsApp">
+      <i class="fa-brands fa-whatsapp"></i>
+    </button>
+    <button class="struk-action-btn struk-action-icon" onclick="shareWhatsapp()" title="WhatsApp">
+      <i class="fa-brands fa-whatsapp"></i>
+    </button>
+  </div>
+  <!-- Row 2: Buat Transaksi Baru -->
+  <button class="btn-simpan" style="width:100%;border-radius:12px;" onclick="switchScreen('pos')">
+    Buat Transaksi Baru
+  </button>
+</div>

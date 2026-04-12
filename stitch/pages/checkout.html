@@ -1,0 +1,67 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('keranjang')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Pembayaran</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="screen-content">
+  <div class="checkout-total-card">
+    <div class="checkout-total-label">Total Tagihan</div>
+    <div class="checkout-total-amount" id="checkout-total-amount">Rp0</div>
+  </div>
+
+  <div class="settings-group-label">Metode Pembayaran</div>
+  <div class="checkout-method-grid">
+    <div class="checkout-method-btn active" onclick="selectPayMethod(this, 'Tunai')">
+      <i class="fa-solid fa-money-bill-wave"></i><span>Tunai</span>
+    </div>
+    <div class="checkout-method-btn" onclick="selectPayMethod(this, 'Transfer')">
+      <i class="fa-solid fa-building-columns"></i><span>Transfer</span>
+    </div>
+    <div class="checkout-method-btn" onclick="selectPayMethod(this, 'QRIS')">
+      <i class="fa-solid fa-qrcode"></i><span>QRIS</span>
+    </div>
+    <div class="checkout-method-btn" onclick="selectPayMethod(this, 'Piutang')">
+      <i class="fa-solid fa-file-invoice-dollar"></i><span>Piutang</span>
+    </div>
+  </div>
+
+  <div id="checkout-tunai-section">
+    <div class="settings-group-label">Uang Diterima</div>
+    <div class="checkout-input-row">
+      <span class="checkout-rp-prefix">Rp</span>
+      <input type="number" id="checkout-bayar" class="checkout-input" placeholder="0" oninput="hitungKembalian()" />
+    </div>
+    <div class="checkout-quick-btns">
+      <button class="checkout-quick-btn" onclick="setNominalCepat(5000)">5rb</button>
+      <button class="checkout-quick-btn" onclick="setNominalCepat(10000)">10rb</button>
+      <button class="checkout-quick-btn" onclick="setNominalCepat(20000)">20rb</button>
+      <button class="checkout-quick-btn" onclick="setNominalCepat(50000)">50rb</button>
+      <button class="checkout-quick-btn" onclick="setNominalCepat(100000)">100rb</button>
+      <button class="checkout-quick-btn" onclick="setNominalCepat(0, true)">Pas</button>
+    </div>
+    <div class="checkout-kembalian-row">
+      <span>Kembalian</span>
+      <span id="checkout-kembalian" class="checkout-kembalian-val">Rp0</span>
+    </div>
+  </div>
+
+  <div class="settings-group-label">Catatan</div>
+  <div class="checkout-note-wrap">
+    <textarea id="checkout-catatan" class="checkout-note" rows="2" placeholder="Catatan transaksi..."></textarea>
+  </div>
+
+  <div class="settings-group-label">Pelanggan</div>
+  <div class="list-menu" style="margin-bottom:12px;">
+    <div class="list-item" onclick="showToast('Pilih pelanggan')">
+      <div class="list-item-left">
+        <i class="fa-solid fa-user list-icon"></i>
+        <span style="color:var(--text-light);">Pilih Pelanggan (opsional)</span>
+      </div>
+      <i class="fa-solid fa-chevron-right"></i>
+    </div>
+  </div>
+  <div style="height:16px;"></div>
+</div>
+<div class="tp-footer">
+  <button class="btn-simpan" onclick="prosesCheckout()">Bayar Sekarang</button>
+</div>

@@ -1,0 +1,23 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('laporan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Laporan Penjualan</span>
+  <span style="width:24px;"></span>
+</div>
+
+<!-- Filter -->
+<div class="laporan-filter-bar">
+  <select class="laporan-filter-select" id="lp-filter" onchange="renderLaporanPenjualan()">
+    <option value="hari">Hari Ini</option>
+    <option value="minggu">Minggu Ini</option>
+    <option value="bulan" selected>Bulan Ini</option>
+    <option value="tahun">Tahun Ini</option>
+    <option value="semua">Semua</option>
+  </select>
+</div>
+
+<div class="screen-content" id="laporan-penjualan-body">
+  <div class="pos-empty-state">
+    <i class="fa-solid fa-chart-line" style="font-size:48px;color:#ddd;margin-bottom:8px;"></i>
+    <p class="pos-empty-title">Memuat data...</p>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('mutasi-stok')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Tambah Mutasi Stok</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="screen-content">
+  <div class="tp-form">
+    <div class="tp-field-group">
+      <label class="tp-label">Tanggal</label>
+      <input type="date" id="mutasi-tanggal" class="tp-input" />
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Produk</label>
+      <div class="tp-select-wrap tp-select-full">
+        <select id="mutasi-produk" class="tp-select"><option value="">Pilih Produk</option></select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Tipe Mutasi</label>
+      <div class="tp-select-wrap tp-select-full">
+        <select id="mutasi-tipe" class="tp-select">
+          <option value="masuk">Stok Masuk (+)</option>
+          <option value="keluar">Stok Keluar (-)</option>
+          <option value="koreksi">Koreksi Stok</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Jumlah</label>
+      <input type="number" id="mutasi-jumlah" class="tp-input" value="0" min="0" />
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Keterangan</label>
+      <textarea id="mutasi-keterangan" class="tp-textarea" rows="2" placeholder="Keterangan..."></textarea>
+    </div>
+  </div>
+  <div style="height:16px;"></div>
+</div>
+<div class="tp-footer">
+  <button class="btn-simpan" onclick="simpanMutasi()">Simpan</button>
+</div>

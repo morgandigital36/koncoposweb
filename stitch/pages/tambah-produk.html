@@ -1,0 +1,159 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('master-produk')" style="font-size:18px;"></i>
+  <span class="topbar-title" id="tp-topbar-title" style="flex:1;text-align:center;">Tambah Produk</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="screen-content tp-content">
+  <form id="formTambahProduk" onsubmit="return false;">
+    <div class="tp-photo-wrap">
+      <div class="tp-photo-box" onclick="openPhotoOptions()">
+        <div id="tp-photo-icon-wrap" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
+          <i class="fa-regular fa-image tp-photo-icon"></i>
+        </div>
+        <img id="tp-photo-preview" src="" alt="Foto" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:10px;" />
+      </div>
+      <span class="tp-photo-label">Foto Produk</span>
+    </div>
+    <input type="file" id="input-foto-file" accept="image/*" style="display:none;" onchange="handleFotoFile(this)" />
+    <div class="tp-form">
+      <div class="tp-field-group">
+        <label class="tp-label">Nama Produk (Wajib)</label>
+        <input type="text" id="tp-nama" class="tp-input" placeholder="Nama produk..." />
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Kategori Produk</label>
+        <div class="tp-select-row">
+          <div class="tp-select-wrap">
+            <select id="tp-select-kategori" class="tp-select"><option value="">Pilih</option></select>
+            <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+          </div>
+          <button type="button" class="tp-add-cat-btn" onclick="tambahKategoriCepat()">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Nama Varian</label>
+        <input type="text" id="tp-varian" class="tp-input" placeholder="" />
+      </div>
+      <div class="tp-two-col">
+        <div class="tp-field-group">
+          <label class="tp-label">Harga Beli</label>
+          <input type="number" id="tp-harga-beli" class="tp-input" value="0" min="0" />
+        </div>
+        <div class="tp-field-group">
+          <label class="tp-label">Harga Jual</label>
+          <input type="number" id="tp-harga-jual" class="tp-input" value="0" min="0" />
+        </div>
+      </div>
+      <div class="tp-two-col">
+        <div class="tp-field-group">
+          <label class="tp-label">Diskon %</label>
+          <input type="number" id="tp-diskon-pct" class="tp-input" value="0" min="0" max="100" />
+        </div>
+        <div class="tp-field-group">
+          <label class="tp-label">Diskon Rp</label>
+          <input type="number" id="tp-diskon-rp" class="tp-input" value="0" min="0" />
+        </div>
+      </div>
+      <div class="tp-two-col">
+        <div class="tp-field-group">
+          <label class="tp-label">Kode</label>
+          <input type="text" id="tp-kode" class="tp-input" placeholder="" />
+        </div>
+        <div class="tp-field-group">
+          <label class="tp-label">Unit</label>
+          <input type="text" id="tp-unit" class="tp-input" value="Pcs" />
+        </div>
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Barcode</label>
+        <div class="tp-barcode-wrap">
+          <input type="text" id="tp-barcode" class="tp-input" placeholder="Scan atau ketik barcode..." style="padding-right:40px;" />
+          <i class="fa-solid fa-barcode tp-barcode-icon" onclick="openScanner('barcode')"></i>
+        </div>
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Keterangan</label>
+        <textarea id="tp-keterangan" class="tp-textarea" rows="3"></textarea>
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Tipe Modal</label>
+        <div class="tp-select-wrap tp-select-full">
+          <select id="tp-select-tipe-modal" class="tp-select">
+            <option value="Harga Beli" selected>Harga Beli</option>
+            <option value="Manual">Manual</option>
+            <option value="Rata-rata">Rata-rata</option>
+          </select>
+          <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+        </div>
+      </div>
+      <div class="tp-stok-row">
+        <div class="tp-stok-left">
+          <label class="tp-label" style="margin-bottom:0;">Pantau Stok</label>
+          <label class="tp-toggle">
+            <input type="checkbox" id="togglePantauStok" checked onchange="toggleStokFields()" />
+            <span class="tp-toggle-slider"></span>
+          </label>
+        </div>
+        <div class="tp-field-group" style="flex:1;margin-bottom:0;">
+          <label class="tp-label">Stok Minimal</label>
+          <input type="number" class="tp-input" value="0" id="tp-stok-minimal" min="0" />
+        </div>
+      </div>
+      <div class="tp-two-col" id="stokAwalRow">
+        <div class="tp-field-group">
+          <label class="tp-label">Stok Awal</label>
+          <input type="number" id="tp-stok-awal" class="tp-input" value="0" min="0" />
+        </div>
+        <div class="tp-field-group">
+          <label class="tp-label">Total Modal</label>
+          <input type="number" id="tp-total-modal" class="tp-input" value="0" readonly />
+        </div>
+      </div>
+    </div>
+    <button type="button" class="tp-outline-btn" onclick="toggleVarianForm()">
+      <i class="fa-solid fa-plus" id="varian-btn-icon"></i> Tambah Varian Harga
+    </button>
+
+    <!-- FORM VARIAN -->
+    <div id="varian-form" style="display:none;" class="tp-sub-form">
+      <div class="tp-sub-form-header">
+        <span>Daftar Varian</span>
+        <button type="button" class="tp-sub-add-btn" onclick="tambahBarisVarian()">
+          <i class="fa-solid fa-plus"></i> Tambah
+        </button>
+      </div>
+      <div id="varian-list">
+        <!-- rows injected by JS -->
+      </div>
+    </div>
+
+    <button type="button" class="tp-outline-btn" onclick="toggleGrosirForm()">
+      <i class="fa-solid fa-plus" id="grosir-btn-icon"></i> Tambah Harga Grosir
+    </button>
+
+    <!-- FORM GROSIR -->
+    <div id="grosir-form" style="display:none;" class="tp-sub-form">
+      <div class="tp-sub-form-header">
+        <span>Harga Grosir</span>
+        <button type="button" class="tp-sub-add-btn" onclick="tambahBarisGrosir()">
+          <i class="fa-solid fa-plus"></i> Tambah
+        </button>
+      </div>
+      <div class="tp-sub-form-row tp-sub-form-head">
+        <span style="flex:2;">Min. Qty</span>
+        <span style="flex:3;">Harga Jual</span>
+        <span style="width:32px;"></span>
+      </div>
+      <div id="grosir-list">
+        <!-- rows injected by JS -->
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+  </form>
+</div>
+<div class="tp-footer">
+  <button class="btn-simpan" onclick="simpanProduk()">Simpan</button>
+</div>

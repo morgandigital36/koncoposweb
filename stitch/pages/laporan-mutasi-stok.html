@@ -1,0 +1,32 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('laporan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Mutasi Stok</span>
+  <i class="fa-solid fa-magnifying-glass topbar-icon" onclick="toggleMutasiSearch()" style="font-size:18px;"></i>
+</div>
+
+<!-- Date range filter -->
+<div class="laporan-daterange-bar">
+  <i class="fa-regular fa-calendar" style="color:var(--text-mid);font-size:14px;"></i>
+  <input type="date" id="mutasi-dari" class="laporan-date-input" onchange="renderLaporanMutasiStok()" />
+  <span style="color:var(--text-light);font-size:13px;">s/d</span>
+  <i class="fa-regular fa-calendar" style="color:var(--text-mid);font-size:14px;"></i>
+  <input type="date" id="mutasi-sampai" class="laporan-date-input" onchange="renderLaporanMutasiStok()" />
+  <button class="laporan-search-btn" onclick="renderLaporanMutasiStok()">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+</div>
+
+<!-- Optional search bar (hidden by default) -->
+<div id="mutasi-search-bar" class="laporan-search-bar" style="display:none;">
+  <i class="fa-solid fa-magnifying-glass" style="color:var(--text-light);font-size:14px;"></i>
+  <input type="text" id="mutasi-search" class="laporan-search-input" placeholder="Cari produk..." oninput="renderLaporanMutasiStok()" />
+</div>
+
+<div class="screen-content" id="laporan-mutasi-body">
+  <p style="text-align:center;color:var(--text-light);padding:40px 0;font-size:14px;">Data tidak ditemukan</p>
+</div>
+
+<!-- FAB tambah mutasi -->
+<button class="laporan-fab" onclick="switchScreen('tambah-mutasi')">
+  <i class="fa-solid fa-plus"></i>
+</button>

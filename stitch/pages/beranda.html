@@ -1,0 +1,60 @@
+<div class="topbar">
+  <span class="topbar-title">Koncowrb</span>
+  <i class="fa-solid fa-store topbar-icon"></i>
+</div>
+<div class="screen-content">
+  <div class="card">
+    <div class="card-title">Menu Lain-lain</div>
+    <div class="menu-grid">
+      <div class="menu-item" onclick="switchScreen('pembelian')">
+        <i class="fa-solid fa-cart-arrow-down"></i><span>Pembelian</span>
+      </div>
+      <div class="menu-item" onclick="switchScreen('mutasi-stok')">
+        <i class="fa-solid fa-boxes-stacked"></i><span>Mutasi Stok</span>
+      </div>
+      <div class="menu-item" onclick="switchScreen('master-produk')">
+        <i class="fa-solid fa-cube"></i><span>Master Produk</span>
+      </div>
+      <div class="menu-item" onclick="switchScreen('bayar-supplier')">
+        <i class="fa-solid fa-money-check-dollar"></i><span>Bayar Supplier</span>
+      </div>
+      <div class="menu-item" onclick="switchScreen('pelanggan-bayar')">
+        <i class="fa-solid fa-hand-holding-dollar"></i><span>Pelanggan Bayar</span>
+      </div>
+      <div class="menu-item" onclick="switchScreen('rekapan')">
+        <i class="fa-solid fa-clipboard-list"></i><span>Rekapan</span>
+      </div>
+      <div class="menu-item" onclick="showToast('POS Offline belum tersedia')">
+        <i class="fa-solid fa-wifi" style="text-decoration:line-through;"></i><span>POS Offline</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <select class="filter-select" id="beranda-filter" onchange="renderBeranda()">
+      <option value="hari">Hari Ini</option>
+      <option value="minggu">Minggu Ini</option>
+      <option value="bulan">Bulan Ini</option>
+      <option value="tahun">Tahun Ini</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Penjualan</div>
+    <table class="sales-table">
+      <thead><tr><th></th><th>Invoice</th><th>Nominal</th></tr></thead>
+      <tbody id="beranda-sales-tbody">
+        <tr><td>Lunas</td><td>0</td><td>Rp0</td></tr>
+        <tr><td>Belum Lu...</td><td>0</td><td>Rp0</td></tr>
+        <tr class="total-row"><td>Total</td><td>0</td><td>Rp0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card chart-card">
+    <div class="chart-placeholder">
+      <canvas id="salesChart"></canvas>
+    </div>
+    <div class="chart-label">Grafik penjualan perhari.</div>
+  </div>
+</div>

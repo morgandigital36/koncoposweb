@@ -1,0 +1,63 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pembelian')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Tambah Pembelian</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="screen-content">
+  <div class="tp-form">
+    <div class="tp-field-group">
+      <label class="tp-label">Tanggal</label>
+      <input type="date" id="beli-tanggal" class="tp-input" />
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Supplier</label>
+      <div class="tp-select-wrap tp-select-full">
+        <select id="beli-supplier" class="tp-select"><option value="">Pilih Supplier</option></select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Produk</label>
+      <div class="tp-select-wrap tp-select-full">
+        <select id="beli-produk" class="tp-select" onchange="updateHargaBeli()"><option value="">Pilih Produk</option></select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+    <div class="tp-two-col">
+      <div class="tp-field-group">
+        <label class="tp-label">Jumlah</label>
+        <input type="number" id="beli-jumlah" class="tp-input" value="1" min="1" oninput="hitungTotalBeli()" />
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Harga Beli</label>
+        <input type="number" id="beli-harga" class="tp-input" value="0" min="0" oninput="hitungTotalBeli()" />
+      </div>
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Total</label>
+      <input type="number" id="beli-total" class="tp-input" value="0" readonly />
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Status Bayar</label>
+      <div class="tp-select-wrap tp-select-full">
+        <select id="beli-status" class="tp-select" onchange="toggleJatuhTempoBeli()">
+          <option value="lunas">Lunas</option>
+          <option value="hutang">Hutang / Belum Lunas</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+    <div class="tp-field-group" id="beli-jth-tempo-group" style="display:none;">
+      <label class="tp-label">Tanggal Jatuh Tempo</label>
+      <input type="date" id="beli-jth-tempo" class="tp-input" />
+    </div>
+    <div class="tp-field-group">
+      <label class="tp-label">Keterangan</label>
+      <textarea id="beli-keterangan" class="tp-textarea" rows="2" placeholder="Keterangan..."></textarea>
+    </div>
+  </div>
+  <div style="height:16px;"></div>
+</div>
+<div class="tp-footer">
+  <button class="btn-simpan" onclick="simpanPembelian()">Simpan</button>
+</div>

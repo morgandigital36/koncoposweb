@@ -1,0 +1,158 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pengaturan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Pengaturan Printer</span>
+  <span class="topbar-text-btn" onclick="testPrint()" style="font-size:13px;cursor:pointer;">Test</span>
+</div>
+
+<div class="screen-content">
+
+  <!-- Mode: Manual / Auto -->
+  <div class="printer-mode-row">
+    <div class="printer-mode-btn active" id="mode-manual" onclick="setPrinterMode('manual')">
+      <i class="fa-regular fa-circle-dot" id="mode-manual-icon"></i>
+      Manual
+    </div>
+    <div class="printer-mode-btn" id="mode-auto" onclick="setPrinterMode('auto')">
+      <i class="fa-regular fa-circle" id="mode-auto-icon"></i>
+      Auto
+    </div>
+  </div>
+
+  <!-- Bluetooth Device -->
+  <div class="printer-section">
+    <div class="printer-section-title">Perangkat Bluetooth</div>
+    <div class="printer-bt-row">
+      <div class="printer-bt-info" id="printer-bt-info">
+        <i class="fa-brands fa-bluetooth" style="font-size:20px;color:#0082FC;"></i>
+        <div>
+          <div id="printer-bt-name" style="font-size:14px;font-weight:600;color:var(--text-dark);">Belum terhubung</div>
+          <div id="printer-bt-status" style="font-size:11px;color:var(--text-light);">Tap untuk scan printer</div>
+        </div>
+      </div>
+      <button class="printer-bt-btn" id="printer-bt-btn" onclick="scanBluetoothPrinter()">
+        <i class="fa-solid fa-bluetooth"></i> Scan
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Grid -->
+  <div class="printer-settings-grid">
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Cash Drawer</label>
+      <div class="tp-select-wrap">
+        <select id="ps-cash-drawer" class="tp-select">
+          <option value="tidak">Tidak</option>
+          <option value="ya">Ya</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Auto Cut</label>
+      <div class="tp-select-wrap">
+        <select id="ps-auto-cut" class="tp-select">
+          <option value="tidak">Tidak</option>
+          <option value="ya">Ya</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Ukuran Printer</label>
+      <div class="tp-select-wrap">
+        <select id="ps-ukuran" class="tp-select">
+          <option value="58">58mm</option>
+          <option value="80">80mm</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Posisi Qty</label>
+      <div class="tp-select-wrap">
+        <select id="ps-posisi-qty" class="tp-select">
+          <option value="depan">Didepan Harga</option>
+          <option value="belakang">Dibelakang Nama</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Tampil Print Dapur</label>
+      <div class="tp-select-wrap">
+        <select id="ps-print-dapur" class="tp-select">
+          <option value="tidak">Tidak</option>
+          <option value="ya">Ya</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Tampil Satuan</label>
+      <div class="tp-select-wrap">
+        <select id="ps-satuan" class="tp-select">
+          <option value="tidak">Tidak</option>
+          <option value="ya">Ya</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Tampil (Anda Hemat...)</label>
+      <div class="tp-select-wrap">
+        <select id="ps-hemat" class="tp-select">
+          <option value="ya">Ya</option>
+          <option value="tidak">Tidak</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Tampil Alamat</label>
+      <div class="tp-select-wrap">
+        <select id="ps-alamat" class="tp-select">
+          <option value="tidak">Tidak</option>
+          <option value="ya">Ya</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Tampil Tgl Pembayaran</label>
+      <div class="tp-select-wrap">
+        <select id="ps-tgl-bayar" class="tp-select">
+          <option value="ya">Ya</option>
+          <option value="tidak">Tidak</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="printer-setting-item">
+      <label class="printer-setting-label">Tampil Jenis Penjualan</label>
+      <div class="tp-select-wrap">
+        <select id="ps-jenis-jual" class="tp-select">
+          <option value="tidak">Tidak</option>
+          <option value="ya">Ya</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="height:16px;"></div>
+</div>
+
+<div class="tp-footer">
+  <button class="btn-simpan" onclick="simpanPengaturanPrinter()">Simpan</button>
+</div>

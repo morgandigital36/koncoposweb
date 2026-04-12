@@ -1,0 +1,91 @@
+<div class="auth-screen">
+
+  <!-- Logo -->
+  <div class="auth-logo-wrap" style="padding-top:24px;">
+    <div class="auth-logo">
+      <i class="fa-solid fa-store"></i>
+    </div>
+    <div class="auth-app-name">Daftar Akun</div>
+    <div class="auth-app-sub">Mulai kelola usaha kamu</div>
+  </div>
+
+  <!-- Form Register -->
+  <div class="auth-card">
+    <div class="tp-form" style="margin-bottom:16px;">
+
+      <div class="tp-field-group">
+        <label class="tp-label">Nama Lengkap *</label>
+        <input type="text" id="reg-nama" class="tp-input" placeholder="Nama lengkap kamu..." />
+      </div>
+
+      <div class="tp-field-group">
+        <label class="tp-label">Nama Usaha *</label>
+        <input type="text" id="reg-usaha" class="tp-input" placeholder="Nama toko / usaha..." />
+      </div>
+
+      <div class="tp-field-group">
+        <label class="tp-label">Jenis Usaha *</label>
+        <div class="tp-select-wrap tp-select-full">
+          <select id="reg-jenis" class="tp-select">
+            <option value="">Pilih jenis usaha...</option>
+            <option value="Warung / Toko Kelontong">Warung / Toko Kelontong</option>
+            <option value="Restoran / Rumah Makan">Restoran / Rumah Makan</option>
+            <option value="Cafe / Kedai Kopi">Cafe / Kedai Kopi</option>
+            <option value="Toko Fashion / Pakaian">Toko Fashion / Pakaian</option>
+            <option value="Toko Elektronik">Toko Elektronik</option>
+            <option value="Apotek / Toko Obat">Apotek / Toko Obat</option>
+            <option value="Toko Bangunan">Toko Bangunan</option>
+            <option value="Salon / Barbershop">Salon / Barbershop</option>
+            <option value="Laundry">Laundry</option>
+            <option value="Toko Online">Toko Online</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+          <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+        </div>
+      </div>
+
+      <div class="tp-field-group">
+        <label class="tp-label">No. Telepon</label>
+        <input type="tel" id="reg-telp" class="tp-input" placeholder="08xx..." />
+      </div>
+
+      <div class="tp-field-group">
+        <label class="tp-label">Email *</label>
+        <input type="email" id="reg-email" class="tp-input" placeholder="email@usaha.com" />
+      </div>
+
+      <div class="tp-field-group">
+        <label class="tp-label">Password * (min. 6 karakter)</label>
+        <div style="position:relative;">
+          <input type="password" id="reg-password" class="tp-input" placeholder="Password..." />
+          <i class="fa-solid fa-eye auth-pw-toggle" onclick="togglePw('reg-password',this)"></i>
+        </div>
+      </div>
+
+      <div class="tp-field-group" style="border-bottom:none;">
+        <label class="tp-label">Konfirmasi Password *</label>
+        <div style="position:relative;">
+          <input type="password" id="reg-konfirmasi" class="tp-input"
+            placeholder="Ulangi password..."
+            onkeydown="if(event.key==='Enter') doRegister()" />
+          <i class="fa-solid fa-eye auth-pw-toggle" onclick="togglePw('reg-konfirmasi',this)"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="btn-simpan" id="btn-register" onclick="doRegister()">
+      <i class="fa-solid fa-user-plus" style="margin-right:6px;"></i>Daftar Sekarang
+    </button>
+
+    <div id="register-error" class="auth-error" style="display:none;"></div>
+  </div>
+
+  <!-- Login link -->
+  <div class="auth-switch">
+    Sudah punya akun?
+    <span class="auth-switch-link" onclick="switchScreen('login')">Masuk</span>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>

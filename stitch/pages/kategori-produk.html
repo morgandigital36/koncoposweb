@@ -1,0 +1,14 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pengaturan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Kategori Produk</span>
+  <span style="width:24px;"></span>
+</div>
+<div class="screen-content">
+  <div class="kat-add-row">
+    <input type="text" id="input-kategori-baru" class="kat-input" placeholder="Nama kategori baru..." />
+    <button class="kat-add-btn" onclick="tambahKategori()">
+      <i class="fa-solid fa-plus"></i> Tambah
+    </button>
+  </div>
+  <div class="list-menu" id="kategori-list"></div>
+</div>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#e8637a" />
+  <meta name="description" content="Koncowrb — Aplikasi kasir POS sederhana berbasis web" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Koncowrb" />
+  <title>Koncowrb — POS Kasir</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span class="time">00:00</span>
+    <div class="status-icons">
+      <i class="fa-solid fa-signal"></i>
+      <i class="fa-solid fa-wifi"></i>
+      <i class="fa-solid fa-battery-half"></i>
+    </div>
+  </div>
+
+  <!-- DYNAMIC SCREEN CONTAINER -->
+  <div id="app"></div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+        <div class="nav-item" onclick="switchScreen('pos')" id="nav-pos">
+          <i class="fa-solid fa-cash-register"></i><span>POS</span>
+        </div>
+        <div class="nav-item" onclick="switchScreen('biaya')" id="nav-biaya">
+          <i class="fa-solid fa-arrow-right-arrow-left"></i><span>Biaya</span>
+        </div>
+        <div class="nav-item active" onclick="switchScreen('beranda')" id="nav-beranda">
+          <i class="fa-solid fa-grip"></i><span>Beranda</span>
+        </div>
+        <div class="nav-item" onclick="switchScreen('laporan')" id="nav-laporan">
+          <i class="fa-solid fa-file-lines"></i><span>Laporan</span>
+        </div>
+        <div class="nav-item" onclick="switchScreen('pengaturan')" id="nav-pengaturan">
+          <i class="fa-solid fa-sliders"></i><span>Pengaturan</span>
+        </div>
+      </nav>
+
+  <!-- ===== MODAL: PILIH FOTO ===== -->
+  <div id="modal-foto" class="modal-overlay" style="display:none;" onclick="closePhotoModal()">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div class="modal-title">Foto Produk</div>
+      <button class="modal-option-btn" onclick="bukaKamera()">
+        <i class="fa-solid fa-camera"></i> Ambil dari Kamera
+      </button>
+      <button class="modal-option-btn" onclick="pilihDariGaleri()">
+        <i class="fa-solid fa-image"></i> Pilih dari Galeri
+      </button>
+      <button class="modal-cancel-btn" onclick="closePhotoModal()">Batal</button>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: KAMERA ===== -->
+  <div id="modal-kamera" class="modal-overlay" style="display:none;">
+    <div class="modal-camera-wrap">
+      <video id="video-kamera" class="modal-camera-video" autoplay playsinline></video>
+      <div class="modal-camera-btns">
+        <button class="modal-cam-cancel" onclick="tutupKamera()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <button class="modal-cam-capture" onclick="ambilFoto()">
+          <i class="fa-solid fa-circle"></i>
+        </button>
+        <div style="width:44px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: BARCODE SCANNER ===== -->
+  <div id="modal-scanner" class="modal-overlay" style="display:none;">
+    <div class="modal-camera-wrap">
+      <video id="video-scanner" class="modal-camera-video" autoplay playsinline></video>
+      <canvas id="canvas-scanner" style="display:none;"></canvas>
+      <div class="scanner-line"></div>
+      <div class="modal-camera-btns">
+        <button class="modal-cam-cancel" onclick="closeScanner()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <button class="modal-cam-capture" onclick="scannerManualInput()" title="Input manual">
+          <i class="fa-solid fa-keyboard"></i>
+        </button>
+        <div style="width:44px;"></div>
+      </div>
+      <div class="scanner-hint">Arahkan kamera ke barcode / QR</div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: FORM KONTAK ===== -->
+  <div id="modal-kontak" class="modal-overlay" style="display:none;" onclick="tutupModalKontak()">
+    <div class="modal-sheet" onclick="event.stopPropagation()" style="gap:0;">
+      <div class="modal-title" id="modal-kontak-title" style="margin-bottom:12px;">Tambah</div>
+      <div class="tp-form" style="padding:0;">
+        <div class="tp-field-group">
+          <label class="tp-label">Nama</label>
+          <input type="text" id="kontak-nama" class="tp-input" placeholder="Nama..." />
+        </div>
+        <div class="tp-field-group">
+          <label class="tp-label">No. Telepon</label>
+          <input type="tel" id="kontak-telp" class="tp-input" placeholder="08xx..." />
+        </div>
+        <div class="tp-field-group">
+          <label class="tp-label">Alamat</label>
+          <textarea id="kontak-alamat" class="tp-textarea" rows="2" placeholder="Alamat..."></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="tp-outline-btn" style="flex:1;margin:0;" onclick="tutupModalKontak()">Batal</button>
+        <button class="btn-simpan" style="flex:1;" onclick="simpanKontak()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/beranda.js"></script>
+  <script src="js/produk.js"></script>
+  <script src="js/pos.js"></script>
+  <script src="js/biaya.js"></script>
+  <script src="js/pembelian.js"></script>
+  <script src="js/pengaturan.js"></script>
+  <script src="js/laporan.js"></script>
+  <script src="js/pdf-export.js"></script>
+  <script src="js/printer.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

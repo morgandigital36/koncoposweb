@@ -1,0 +1,15 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pengaturan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Master Produk</span>
+  <i class="fa-solid fa-plus topbar-icon" onclick="switchScreen('tambah-produk')"></i>
+</div>
+<div class="mp-search-bar">
+  <i class="fa-solid fa-magnifying-glass" style="color:var(--text-light);font-size:14px;"></i>
+  <input type="text" class="mp-search-input" placeholder="Cari produk..." oninput="filterMasterProduk(this.value)" />
+</div>
+<div class="screen-content" id="master-produk-list">
+  <div class="pos-empty-state">
+    <p class="pos-empty-title">Belum ada produk</p>
+    <p class="pos-empty-sub">Tap + untuk menambah produk</p>
+  </div>
+</div>

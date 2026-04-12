@@ -1,0 +1,45 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pengaturan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Kurir</span>
+  <span id="kurir-count" style="font-size:12px;color:rgba(255,255,255,0.8);"></span>
+</div>
+<div class="crud-search-bar">
+  <i class="fa-solid fa-magnifying-glass" style="color:var(--text-light);font-size:14px;flex-shrink:0;"></i>
+  <input type="text" id="kurir-search" class="crud-search-input" placeholder="Cari kurir..." oninput="filterKontak('kurir')" />
+</div>
+<div class="screen-content" id="kurir-list"></div>
+<button class="crud-fab" onclick="openFormKontak('kurir')">
+  <i class="fa-solid fa-plus"></i>
+</button>
+
+<div id="modal-kontak-kurir" class="modal-overlay" style="display:none;" onclick="tutupFormKontak('kurir')">
+  <div class="modal-sheet crud-form-sheet" onclick="event.stopPropagation()">
+    <div class="crud-form-header">
+      <span id="form-kurir-title">Tambah Kurir</span>
+      <i class="fa-solid fa-xmark modal-close-icon" onclick="tutupFormKontak('kurir')"></i>
+    </div>
+    <div class="tp-form" style="margin-bottom:12px;">
+      <div class="tp-field-group">
+        <label class="tp-label">Nama Kurir *</label>
+        <input type="text" id="form-kurir-nama" class="tp-input" placeholder="Nama kurir..." />
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">No. Telepon</label>
+        <input type="tel" id="form-kurir-telp" class="tp-input" placeholder="08xx..." />
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Kendaraan</label>
+        <input type="text" id="form-kurir-email" class="tp-input" placeholder="Motor/Mobil..." />
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Alamat</label>
+        <textarea id="form-kurir-alamat" class="tp-textarea" rows="2" placeholder="Alamat..."></textarea>
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Keterangan</label>
+        <input type="text" id="form-kurir-ket" class="tp-input" placeholder="Keterangan..." />
+      </div>
+    </div>
+    <button class="btn-simpan" onclick="simpanFormKontak('kurir')">Simpan</button>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+<div class="topbar">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('laporan')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Pilih Pelanggan</span>
+  <span style="width:24px;"></span>
+</div>
+
+<!-- Column header -->
+<div class="laporan-col-header">
+  <span class="laporan-col-no">#</span>
+  <span class="laporan-col-main">PELANGGAN</span>
+  <span class="laporan-col-mid">INVOICE</span>
+  <span class="laporan-col-right">PIUTANG</span>
+</div>
+
+<!-- Search -->
+<div class="laporan-search-bar">
+  <i class="fa-solid fa-magnifying-glass" style="color:var(--text-light);font-size:14px;"></i>
+  <input type="text" id="piutang-search" class="laporan-search-input" placeholder="Cari..." oninput="renderLaporanPiutang()" />
+</div>
+
+<div class="screen-content" id="laporan-piutang-body">
+  <p style="text-align:center;color:var(--text-light);padding:40px 0;font-size:14px;">Data tidak ditemukan</p>
+</div>

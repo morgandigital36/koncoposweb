@@ -1,0 +1,46 @@
+<div class="auth-screen">
+
+  <!-- Logo -->
+  <div class="auth-logo-wrap">
+    <div class="auth-logo">
+      <i class="fa-solid fa-store"></i>
+    </div>
+    <div class="auth-app-name">Koncowrb</div>
+    <div class="auth-app-sub">Aplikasi Kasir Modern</div>
+  </div>
+
+  <!-- Form Login -->
+  <div class="auth-card">
+    <div class="auth-card-title">Masuk ke Akun</div>
+
+    <div class="tp-form" style="margin-bottom:16px;">
+      <div class="tp-field-group">
+        <label class="tp-label">Email</label>
+        <input type="email" id="login-email" class="tp-input"
+          placeholder="email@usaha.com" autocomplete="email" />
+      </div>
+      <div class="tp-field-group">
+        <label class="tp-label">Password</label>
+        <div style="position:relative;">
+          <input type="password" id="login-password" class="tp-input"
+            placeholder="Password..." autocomplete="current-password"
+            onkeydown="if(event.key==='Enter') doLogin()" />
+          <i class="fa-solid fa-eye auth-pw-toggle" onclick="togglePw('login-password',this)"></i>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-simpan" id="btn-login" onclick="doLogin()">
+      <i class="fa-solid fa-right-to-bracket" style="margin-right:6px;"></i>Masuk
+    </button>
+
+    <div id="login-error" class="auth-error" style="display:none;"></div>
+  </div>
+
+  <!-- Register link -->
+  <div class="auth-switch">
+    Belum punya akun?
+    <span class="auth-switch-link" onclick="switchScreen('register')">Daftar Sekarang</span>
+  </div>
+
+</div>
