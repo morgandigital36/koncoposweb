@@ -1868,6 +1868,27 @@ body {
   flex-shrink: 0;
 }
 
+.cart-btn-draft {
+  flex: 1;
+  background: var(--white);
+  border: 2px solid #f39c12;
+  color: #f39c12;
+  border-radius: 12px;
+  padding: 13px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.cart-btn-draft:active {
+  background: #fff8e1;
+}
+
 .cart-btn-belum-bayar {
   flex: 1;
   background: var(--white);

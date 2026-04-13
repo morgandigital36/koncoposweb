@@ -513,6 +513,63 @@ function prosesCheckoutPiutang() {
   _simpanTransaksi('Piutang');
 }
 
+function simpanDraft() {
+  if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
+  
+  const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const transaksi = {
+    id: 'trx_' + Date.now(),
+    tanggal: cartForm.tglTransaksi ? cartForm.tglTransaksi + 'T' + new Date().toTimeString().slice(0,8) : new Date().toISOString(),
+    tglJthTempo: cartForm.tglJthTempo || null,
+    pelangganId: cartForm.pelangganId,
+    pelanggan: cartForm.pelangganNama || '',
+    noMeja: cartForm.noMeja || '',
+    jenisPenjualan: cartForm.jenisPenjualan || '',
+    salesId: cartForm.salesId,
+    sales: cartForm.salesNama || '',
+    items: [...cart],
+    total,
+    metodePembayaran: 'Draft',
+    catatan: document.getElementById('cart-keterangan')?.value.trim() || '',
+    bayar: 0,
+    kembalian: 0,
+    isDraft: true, // Transaksi draft
+    lunas: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  
+  const trxList = DB.get('transaksi');
+  trxList.push(transaksi);
+  DB.set('transaksi', trxList);
+  
+  // Auto-sync transaksi ke GAS
+  autoSync('transaksi', 'create', transaksi);
+  
+  // Sync transaksi items
+  transaksi.items.forEach((item, idx) => {
+    autoSync('transaksiItems', 'create', {
+      id: 'ti_' + transaksi.id + '_' + idx,
+      transaksiId: transaksi.id,
+      produkId: item.id,
+      nama: item.nama,
+      harga: item.harga,
+      hargaBeli: item.hargaBeli || 0,
+      qty: item.qty,
+      unit: item.unit || 'Pcs',
+      subtotal: item.qty * item.harga,
+      createdAt: new Date().toISOString(),
+    });
+  });
+  
+  // Clear cart
+  cart = [];
+  updateCartBar();
+  
+  showToast('Draft disimpan!');
+  switchScreen('pos');
+}
+
 function _simpanTransaksi(metode) {
   const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
   const bayarInput = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
@@ -533,6 +590,10 @@ function _simpanTransaksi(metode) {
     catatan: document.getElementById('cart-keterangan')?.value.trim() || '',
     bayar,
     kembalian: bayar - total,
+    isDraft: false, // Transaksi selesai, bukan draft
+    lunas: metode !== 'Piutang', // Lunas jika bukan piutang
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
   const trxList = DB.get('transaksi');
   trxList.push(transaksi);

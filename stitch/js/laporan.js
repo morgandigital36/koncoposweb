@@ -74,6 +74,8 @@ function renderLaporanPenjualan() {
   const query = document.getElementById('lp-search')?.value.toLowerCase() || '';
 
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions - only show completed transactions
+  trxList = trxList.filter(t => !t.isDraft);
   if (dari) trxList = trxList.filter(t => t.tanggal >= dari);
   if (sampai) trxList = trxList.filter(t => t.tanggal <= sampai + 'T23:59:59');
   if (query) trxList = trxList.filter(t => (t.pelanggan || 'umum').toLowerCase().includes(query));
@@ -138,6 +140,8 @@ function exportPenjualanExcel() {
   const dari = document.getElementById('lp-dari')?.value || '';
   const sampai = document.getElementById('lp-sampai')?.value || '';
   let list = DB.get('transaksi');
+  // Filter out draft transactions
+  list = list.filter(t => !t.isDraft);
   if (dari) list = list.filter(t => t.tanggal >= dari);
   if (sampai) list = list.filter(t => t.tanggal <= sampai + 'T23:59:59');
 
@@ -187,6 +191,8 @@ function renderLaporanProdukTerjual() {
   const sampai = document.getElementById('lpt-sampai')?.value;
 
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions
+  trxList = trxList.filter(t => !t.isDraft);
   if (dari) trxList = trxList.filter(t => t.tanggal >= dari);
   if (sampai) trxList = trxList.filter(t => t.tanggal <= sampai + 'T23:59:59');
 
@@ -230,6 +236,8 @@ function exportProdukTerjualExcel() {
   const dari = document.getElementById('lpt-dari')?.value || '';
   const sampai = document.getElementById('lpt-sampai')?.value || '';
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions
+  trxList = trxList.filter(t => !t.isDraft);
   if (dari) trxList = trxList.filter(t => t.tanggal >= dari);
   if (sampai) trxList = trxList.filter(t => t.tanggal <= sampai + 'T23:59:59');
 
@@ -560,6 +568,8 @@ function renderLaporanLabaRugi() {
   const sampai = document.getElementById('llr-sampai')?.value;
 
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions
+  trxList = trxList.filter(t => !t.isDraft);
   let pembelianList = DB.get('pembelian');
   let biayaList = DB.get('biaya');
 
@@ -614,6 +624,8 @@ function exportLabaRugiExcel() {
   const sampai = document.getElementById('llr-sampai')?.value || '';
   
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions
+  trxList = trxList.filter(t => !t.isDraft);
   let biayaList = DB.get('biaya');
   
   if (dari) {
@@ -656,6 +668,8 @@ function renderLaporanArusKas() {
   const sampai = document.getElementById('lak-sampai')?.value;
 
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions
+  trxList = trxList.filter(t => !t.isDraft);
   let pembelianList = DB.get('pembelian').filter(b => b.status === 'lunas');
   let biayaList = DB.get('biaya');
 
@@ -720,6 +734,8 @@ function exportArusKasExcel() {
   const sampai = document.getElementById('lak-sampai')?.value || '';
 
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions
+  trxList = trxList.filter(t => !t.isDraft);
   let pembelianList = DB.get('pembelian').filter(b => b.status === 'lunas');
   let biayaList = DB.get('biaya');
 
@@ -848,6 +864,8 @@ function renderLaporanOmsetSales() {
   const sampai = document.getElementById('omset-sampai')?.value;
 
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions
+  trxList = trxList.filter(t => !t.isDraft);
   if (dari) trxList = trxList.filter(t => t.tanggal >= dari);
   if (sampai) trxList = trxList.filter(t => t.tanggal <= sampai + 'T23:59:59');
 
@@ -895,6 +913,8 @@ function exportOmsetExcel() {
   const dari = document.getElementById('omset-dari')?.value || '';
   const sampai = document.getElementById('omset-sampai')?.value || '';
   let trxList = DB.get('transaksi');
+  // Filter out draft transactions
+  trxList = trxList.filter(t => !t.isDraft);
   if (dari) trxList = trxList.filter(t => t.tanggal >= dari);
   if (sampai) trxList = trxList.filter(t => t.tanggal <= sampai + 'T23:59:59');
 
@@ -936,6 +956,8 @@ function renderLaporanInvoicePelanggan() {
   const query = document.getElementById('inv-pel-search')?.value.toLowerCase() || '';
 
   let list = DB.get('transaksi');
+  // Filter out draft transactions
+  list = list.filter(t => !t.isDraft);
   if (dari) list = list.filter(t => t.tanggal >= dari);
   if (sampai) list = list.filter(t => t.tanggal <= sampai + 'T23:59:59');
   if (query) list = list.filter(t => (t.pelanggan || 'umum').toLowerCase().includes(query));
@@ -984,6 +1006,8 @@ function exportInvoicePelangganExcel() {
   const dari = document.getElementById('inv-pel-dari')?.value || '';
   const sampai = document.getElementById('inv-pel-sampai')?.value || '';
   let list = DB.get('transaksi');
+  // Filter out draft transactions
+  list = list.filter(t => !t.isDraft);
   if (dari) list = list.filter(t => t.tanggal >= dari);
   if (sampai) list = list.filter(t => t.tanggal <= sampai + 'T23:59:59');
 
@@ -1083,7 +1107,7 @@ function renderLaporanJatuhTempo() {
   const filterStatus = document.getElementById('jt-filter')?.value || 'semua';
   const filterTipe = document.getElementById('jt-tipe')?.value || 'semua';
 
-  const trxList = DB.get('transaksi').filter(t => t.metodePembayaran === 'Piutang' && !t.lunas && t.tglJthTempo);
+  const trxList = DB.get('transaksi').filter(t => !t.isDraft && t.metodePembayaran === 'Piutang' && !t.lunas && t.tglJthTempo);
   const beliList = DB.get('pembelian').filter(b => b.status === 'hutang' && b.tglJthTempo);
 
   const now = new Date();
@@ -1157,7 +1181,7 @@ function exportJatuhTempoExcel() {
   const filterStatus = document.getElementById('jt-filter')?.value || 'semua';
   const filterTipe = document.getElementById('jt-tipe')?.value || 'semua';
 
-  const trxList = DB.get('transaksi').filter(t => t.metodePembayaran === 'Piutang' && !t.lunas && t.tglJthTempo);
+  const trxList = DB.get('transaksi').filter(t => !t.isDraft && t.metodePembayaran === 'Piutang' && !t.lunas && t.tglJthTempo);
   const beliList = DB.get('pembelian').filter(b => b.status === 'hutang' && b.tglJthTempo);
 
   const now = new Date();
