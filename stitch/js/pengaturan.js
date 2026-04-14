@@ -266,45 +266,22 @@ function simpanKasirBaru() {
   if (password && password !== passwordConfirm) { showToast('Password tidak cocok'); return; }
   if (password && password.length < 6) { showToast('Password minimal 6 karakter'); return; }
   
-  // Collect all permissions (30 permissions total)
+  // Collect simplified 14 permissions
   const permissions = {
-    // POS & Transaksi (6)
-    aksesPOS: document.getElementById('perm-akses-pos')?.checked || false,
+    ubahPOS: document.getElementById('perm-ubah-pos')?.checked || false,
     ubahHarga: document.getElementById('perm-ubah-harga')?.checked || false,
     ubahDiskon: document.getElementById('perm-ubah-diskon')?.checked || false,
-    hapusTransaksi: document.getElementById('perm-hapus-transaksi')?.checked || false,
-    simpanDraft: document.getElementById('perm-simpan-draft')?.checked || false,
-    ubahTanggal: document.getElementById('perm-ubah-tanggal')?.checked || false,
-    
-    // Produk & Stok (5)
-    lihatHargaBeli: document.getElementById('perm-lihat-harga-beli')?.checked || false,
-    tambahProduk: document.getElementById('perm-tambah-produk')?.checked || false,
-    editProduk: document.getElementById('perm-edit-produk')?.checked || false,
-    hapusProduk: document.getElementById('perm-hapus-produk')?.checked || false,
-    kelolaStok: document.getElementById('perm-kelola-stok')?.checked || false,
-    
-    // Pembelian & Supplier (4)
-    aksesPembelian: document.getElementById('perm-akses-pembelian')?.checked || false,
-    tambahPembelian: document.getElementById('perm-tambah-pembelian')?.checked || false,
-    hapusPembelian: document.getElementById('perm-hapus-pembelian')?.checked || false,
-    bayarHutang: document.getElementById('perm-bayar-hutang')?.checked || false,
-    
-    // Biaya & Keuangan (3)
-    aksesBiaya: document.getElementById('perm-akses-biaya')?.checked || false,
-    tambahBiaya: document.getElementById('perm-tambah-biaya')?.checked || false,
-    hapusBiaya: document.getElementById('perm-hapus-biaya')?.checked || false,
-    
-    // Laporan (3)
-    aksesLaporan: document.getElementById('perm-akses-laporan')?.checked || false,
-    exportLaporan: document.getElementById('perm-export-laporan')?.checked || false,
-    lihatLabaRugi: document.getElementById('perm-lihat-laba-rugi')?.checked || false,
-    
-    // Pengaturan (5)
-    aksesPengaturan: document.getElementById('perm-akses-pengaturan')?.checked || false,
+    printDraft: document.getElementById('perm-print-draft')?.checked || false,
     kelolaMaster: document.getElementById('perm-kelola-master')?.checked || false,
-    kelolaKasir: document.getElementById('perm-kelola-kasir')?.checked || false,
-    syncData: document.getElementById('perm-sync-data')?.checked || false,
-    hapusData: document.getElementById('perm-hapus-data')?.checked || false,
+    ubahTanggal: document.getElementById('perm-ubah-tanggal')?.checked || false,
+    tampilBiaya: document.getElementById('perm-tampil-biaya')?.checked || false,
+    ubahBiaya: document.getElementById('perm-ubah-biaya')?.checked || false,
+    tampilPembelian: document.getElementById('perm-tampil-pembelian')?.checked || false,
+    printPembelian: document.getElementById('perm-print-pembelian')?.checked || false,
+    tampilLaporan: document.getElementById('perm-tampil-laporan')?.checked || false,
+    riwayatPOS: document.getElementById('perm-riwayat-pos')?.checked || false,
+    tampilRekapan: document.getElementById('perm-tampil-rekapan')?.checked || false,
+    tambahProdukManual: document.getElementById('perm-tambah-produk-manual')?.checked || false,
   };
   
   const kasir = {
@@ -322,7 +299,7 @@ function simpanKasirBaru() {
   const list = DB.get('kasir');
   list.push(kasir);
   DB.set('kasir', list);
-  autoSync('kasir', 'create', kasir);
+  autoSync('kasir', 'create', kasir, kasir.id);
   showToast('Kasir berhasil ditambahkan!');
   switchScreen('kasir');
 }

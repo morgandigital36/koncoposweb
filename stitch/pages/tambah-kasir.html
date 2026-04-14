@@ -39,327 +39,118 @@
       </div>
     </div>
 
-    <!-- Permissions -->
+    <!-- Permissions - Simplified -->
     <div class="kasir-form-section kasir-permissions">
-      <div class="kasir-section-header">
-        <i class="fa-solid fa-shield-halved"></i>
-        <span>Hak Akses Kasir</span>
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh ubah POS</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-pos" checked />
+          <span class="kasir-toggle-slider"></span>
+        </label>
       </div>
       
-      <!-- POS & Transaksi -->
-      <div class="kasir-perm-category">
-        <div class="kasir-perm-category-title">POS & Transaksi</div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Akses POS</span>
-            <span class="kasir-perm-desc">Dapat mengakses halaman POS dan melakukan transaksi</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-akses-pos" checked />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Ubah Harga Jual</span>
-            <span class="kasir-perm-desc">Dapat mengubah harga produk saat transaksi</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-ubah-harga" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Ubah Diskon</span>
-            <span class="kasir-perm-desc">Dapat memberikan diskon pada transaksi</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-ubah-diskon" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Hapus Transaksi</span>
-            <span class="kasir-perm-desc">Dapat menghapus transaksi dari log</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-hapus-transaksi" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Simpan Draft</span>
-            <span class="kasir-perm-desc">Dapat menyimpan transaksi sebagai draft</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-simpan-draft" checked />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Ubah Tanggal Transaksi</span>
-            <span class="kasir-perm-desc">Dapat mengubah tanggal transaksi</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-ubah-tanggal" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh mengubah harga jual</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-harga" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
       </div>
       
-      <!-- Produk & Stok -->
-      <div class="kasir-perm-category">
-        <div class="kasir-perm-category-title">Produk & Stok</div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Lihat Harga Beli</span>
-            <span class="kasir-perm-desc">Dapat melihat harga beli produk</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-lihat-harga-beli" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Tambah Produk</span>
-            <span class="kasir-perm-desc">Dapat menambah produk baru</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-tambah-produk" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Edit Produk</span>
-            <span class="kasir-perm-desc">Dapat mengubah data produk</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-edit-produk" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Hapus Produk</span>
-            <span class="kasir-perm-desc">Dapat menghapus produk</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-hapus-produk" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Kelola Stok</span>
-            <span class="kasir-perm-desc">Dapat mengubah stok produk</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-kelola-stok" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh mengubah diskon</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-diskon" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
       </div>
       
-      <!-- Pembelian & Supplier -->
-      <div class="kasir-perm-category">
-        <div class="kasir-perm-category-title">Pembelian & Supplier</div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Akses Pembelian</span>
-            <span class="kasir-perm-desc">Dapat melihat halaman pembelian</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-akses-pembelian" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Tambah Pembelian</span>
-            <span class="kasir-perm-desc">Dapat menambah pembelian baru</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-tambah-pembelian" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Hapus Pembelian</span>
-            <span class="kasir-perm-desc">Dapat menghapus data pembelian</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-hapus-pembelian" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Bayar Hutang Supplier</span>
-            <span class="kasir-perm-desc">Dapat melunasi hutang supplier</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-bayar-hutang" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Print Draft</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-print-draft" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
       </div>
       
-      <!-- Biaya & Keuangan -->
-      <div class="kasir-perm-category">
-        <div class="kasir-perm-category-title">Biaya & Keuangan</div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Akses Biaya</span>
-            <span class="kasir-perm-desc">Dapat melihat halaman biaya</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-akses-biaya" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Tambah Biaya</span>
-            <span class="kasir-perm-desc">Dapat menambah biaya baru</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-tambah-biaya" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Hapus Biaya</span>
-            <span class="kasir-perm-desc">Dapat menghapus data biaya</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-hapus-biaya" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Mengelola Master</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-kelola-master" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
       </div>
       
-      <!-- Laporan -->
-      <div class="kasir-perm-category">
-        <div class="kasir-perm-category-title">Laporan</div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Akses Laporan</span>
-            <span class="kasir-perm-desc">Dapat melihat semua laporan</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-akses-laporan" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Export Laporan</span>
-            <span class="kasir-perm-desc">Dapat export laporan ke PDF/Excel</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-export-laporan" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Lihat Laba Rugi</span>
-            <span class="kasir-perm-desc">Dapat melihat laporan laba rugi</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-lihat-laba-rugi" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh Ubah Tanggal</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-tanggal" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
       </div>
       
-      <!-- Pengaturan -->
-      <div class="kasir-perm-category">
-        <div class="kasir-perm-category-title">Pengaturan</div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Akses Pengaturan</span>
-            <span class="kasir-perm-desc">Dapat mengakses halaman pengaturan</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-akses-pengaturan" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Kelola Master Data</span>
-            <span class="kasir-perm-desc">Dapat mengelola pelanggan, supplier, dll</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-kelola-master" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Kelola Kasir</span>
-            <span class="kasir-perm-desc">Dapat menambah/edit kasir lain</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-kelola-kasir" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Sinkronisasi Data</span>
-            <span class="kasir-perm-desc">Dapat melakukan sync ke Google Sheets</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-sync-data" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
-        
-        <div class="kasir-permission-item">
-          <div class="kasir-perm-info">
-            <span class="kasir-permission-label">Hapus Data</span>
-            <span class="kasir-perm-desc">Dapat menghapus semua data (berbahaya!)</span>
-          </div>
-          <label class="kasir-toggle">
-            <input type="checkbox" id="perm-hapus-data" />
-            <span class="kasir-toggle-slider"></span>
-          </label>
-        </div>
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Biaya & Pendapatan</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-tampil-biaya" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Boleh Ubah Biaya & Pendapatan</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-ubah-biaya" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Pembelian</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-tampil-pembelian" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Print Pembelian</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-print-pembelian" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Laporan</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-tampil-laporan" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Riwayat POS</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-riwayat-pos" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tampil Rekapan</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-tampil-rekapan" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="kasir-permission-item">
+        <span class="kasir-permission-label">Tambah Produk Manual</span>
+        <label class="kasir-toggle">
+          <input type="checkbox" id="perm-tambah-produk-manual" />
+          <span class="kasir-toggle-slider"></span>
+        </label>
       </div>
     </div>
   </div>
