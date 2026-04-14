@@ -39,7 +39,7 @@ var SCHEMAS = {
   'Transaksi Items':['id','userId','transaksiId','produkId','nama','harga','hargaBeli','qty','unit','subtotal','createdAt'],
   'Pembelian':['id','userId','tanggal','supplierId','supplierNama','produkId','produkNama','unit','jumlah','harga','total','status','tglJthTempo','keterangan','createdAt'],
   'Mutasi Stok':['id','userId','tanggal','produkId','produkNama','tipe','jumlah','keterangan','createdAt'],
-  'Biaya':['id','userId','tanggal','kategori','nominal','tipe','keterangan','createdAt'],
+  'Biaya':['id','userId','tanggal','metode','kategori','nominal','tipe','keterangan','masukLabaRugi','createdAt'],
   'Laporan Penjualan':['userId','tanggal','invoiceId','pelanggan','items','total','metode','status','kasir'],
   'Laporan Pembelian':['userId','tanggal','produk','supplier','jumlah','harga','total','status'],
   'Laporan Stok':['userId','produk','kategori','stokAwal','masuk','keluar','stokAkhir','nilaiStok'],

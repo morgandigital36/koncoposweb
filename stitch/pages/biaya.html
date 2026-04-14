@@ -1,11 +1,51 @@
-<div class="topbar">
-  <span class="topbar-title">Biaya</span>
-  <i class="fa-solid fa-plus topbar-icon" onclick="switchScreen('tambah-biaya')"></i>
+<div class="topbar" style="background:var(--primary);">
+  <span class="topbar-title" style="flex:1;text-align:center;">Biaya / Pendapatan Lain-lain</span>
+  <i class="fa-solid fa-magnifying-glass topbar-icon" onclick="toggleBiayaSearch()" style="font-size:18px;"></i>
 </div>
-<div class="screen-content" id="biaya-list-area">
-  <div class="pos-empty-state" style="flex-direction:column;gap:14px;">
-    <i class="fa-solid fa-receipt" style="font-size:48px;color:#ddd;"></i>
-    <p class="pos-empty-title">Belum ada data biaya</p>
-    <button class="btn-simpan" onclick="switchScreen('tambah-biaya')" style="margin-top:8px;">Tambah Biaya</button>
+
+<!-- Search Bar (hidden by default) -->
+<div id="biaya-search-bar" class="laporan-search-bar" style="display:none;">
+  <i class="fa-solid fa-magnifying-glass" style="color:var(--text-light);font-size:14px;"></i>
+  <input type="text" id="biaya-search-input" class="laporan-search-input" placeholder="Cari kategori, keterangan..." oninput="filterBiayaList()" />
+  <i class="fa-solid fa-xmark" onclick="clearBiayaSearch()" style="color:var(--text-light);font-size:14px;cursor:pointer;"></i>
+</div>
+
+<!-- Date Range Filter -->
+<div class="laporan-filter-bar" style="padding:12px 16px;background:#fff;border-bottom:1px solid #eee;">
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+    <div style="flex:1;">
+      <input type="date" id="biaya-dari" class="laporan-date-input" onchange="filterBiayaByDate()" />
+    </div>
+    <span style="color:var(--text-light);font-size:12px;">s/d</span>
+    <div style="flex:1;">
+      <input type="date" id="biaya-sampai" class="laporan-date-input" onchange="filterBiayaByDate()" />
+    </div>
+    <button onclick="filterBiayaByDate()" style="background:var(--primary);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;">
+      <i class="fa-solid fa-magnifying-glass" style="font-size:12px;"></i>
+    </button>
+  </div>
+  
+  <!-- Summary Cards -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div style="background:#fef5f5;border-radius:8px;padding:12px;text-align:center;">
+      <div style="font-size:11px;color:var(--text-light);margin-bottom:4px;">TOTAL BIAYA</div>
+      <div id="biaya-total-biaya" style="font-size:16px;font-weight:700;color:var(--danger);">Rp0</div>
+    </div>
+    <div style="background:#f0fdf4;border-radius:8px;padding:12px;text-align:center;">
+      <div style="font-size:11px;color:var(--text-light);margin-bottom:4px;">TOTAL PENDAPATAN</div>
+      <div id="biaya-total-pendapatan" style="font-size:16px;font-weight:700;color:#16a34a;">Rp0</div>
+    </div>
   </div>
 </div>
+
+<div class="screen-content" id="biaya-list-area" style="padding-top:0;">
+  <div class="pos-empty-state" style="flex-direction:column;gap:14px;padding:40px 20px;">
+    <i class="fa-solid fa-receipt" style="font-size:48px;color:#ddd;"></i>
+    <p class="pos-empty-title">Data tidak ditemukan</p>
+  </div>
+</div>
+
+<!-- FAB Button -->
+<button class="crud-fab" onclick="switchScreen('tambah-biaya')" style="background:var(--primary);">
+  <i class="fa-solid fa-plus"></i>
+</button>

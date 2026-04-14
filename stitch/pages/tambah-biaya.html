@@ -1,46 +1,93 @@
-<div class="topbar">
-  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('biaya')" style="font-size:18px;"></i>
-  <span class="topbar-title" style="flex:1;text-align:center;">Tambah Biaya</span>
+<div class="topbar" style="background:var(--primary);">
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('biaya')" style="font-size:18px;color:#fff;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;color:#fff;">Tambah</span>
   <span style="width:24px;"></span>
 </div>
-<div class="screen-content">
-  <div class="tp-form">
-    <div class="tp-field-group">
-      <label class="tp-label">Tanggal</label>
-      <input type="date" id="biaya-tanggal" class="tp-input" />
-    </div>
-    <div class="tp-field-group">
-      <label class="tp-label">Kategori</label>
-      <div class="tp-select-wrap tp-select-full">
-        <select id="biaya-kategori" class="tp-select">
-          <option value="">Pilih Kategori</option>
-          <option>Operasional</option><option>Gaji</option>
-          <option>Listrik/Air</option><option>Sewa</option><option>Lainnya</option>
+
+<div class="screen-content" style="padding:16px;">
+  <!-- Radio Button: Biaya / Pendapatan -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+    <label class="biaya-radio-card" onclick="setBiayaTipe('biaya')">
+      <input type="radio" name="biaya-tipe-radio" value="biaya" checked style="display:none;" />
+      <div class="biaya-radio-circle" id="radio-biaya">
+        <div class="biaya-radio-dot"></div>
+      </div>
+      <span class="biaya-radio-label">Biaya</span>
+    </label>
+    <label class="biaya-radio-card" onclick="setBiayaTipe('pendapatan')">
+      <input type="radio" name="biaya-tipe-radio" value="pendapatan" style="display:none;" />
+      <div class="biaya-radio-circle" id="radio-pendapatan">
+        <div class="biaya-radio-dot"></div>
+      </div>
+      <span class="biaya-radio-label">Pendapatan L...</span>
+    </label>
+  </div>
+
+  <!-- Metode Pembayaran -->
+  <div class="tp-field-group">
+    <label class="tp-label">Metode Pembayaran (Wajib)</label>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="tp-select-wrap" style="flex:1;">
+        <select id="biaya-metode" class="tp-select">
+          <option value="">KAS/TUNAI</option>
         </select>
         <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
       </div>
-    </div>
-    <div class="tp-field-group">
-      <label class="tp-label">Nominal</label>
-      <input type="number" id="biaya-nominal" class="tp-input" placeholder="0" min="0" />
-    </div>
-    <div class="tp-field-group">
-      <label class="tp-label">Tipe</label>
-      <div class="tp-select-wrap tp-select-full">
-        <select id="biaya-tipe" class="tp-select">
-          <option value="biaya">Biaya / Pengeluaran</option>
-          <option value="pendapatan">Pendapatan Lain</option>
-        </select>
-        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
-      </div>
-    </div>
-    <div class="tp-field-group">
-      <label class="tp-label">Keterangan</label>
-      <textarea id="biaya-keterangan" class="tp-textarea" rows="3" placeholder="Keterangan..."></textarea>
+      <button onclick="openFormMetodePembayaran()" style="width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid var(--primary);color:var(--primary);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <i class="fa-solid fa-plus"></i>
+      </button>
     </div>
   </div>
-  <div style="height:16px;"></div>
+
+  <!-- Kategori -->
+  <div class="tp-field-group">
+    <label class="tp-label">Kategori (Wajib)</label>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="tp-select-wrap" style="flex:1;">
+        <select id="biaya-kategori" class="tp-select">
+          <option value="">Pilih Kategori</option>
+        </select>
+        <i class="fa-solid fa-chevron-down tp-select-arrow"></i>
+      </div>
+      <button onclick="bukaFormKategoriBiaya()" style="width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid var(--primary);color:var(--primary);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tanggal & Nominal -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+    <div class="tp-field-group" style="margin-bottom:0;">
+      <label class="tp-label">Tanggal</label>
+      <input type="date" id="biaya-tanggal" class="tp-input" style="padding:12px;border:1px solid #ddd;border-radius:8px;" />
+    </div>
+    <div class="tp-field-group" style="margin-bottom:0;">
+      <label class="tp-label">Nominal (Wajib)</label>
+      <input type="number" id="biaya-nominal" class="tp-input" placeholder="Rp0" min="0" style="padding:12px;border:1px solid #ddd;border-radius:8px;" />
+    </div>
+  </div>
+
+  <!-- Keterangan -->
+  <div class="tp-field-group">
+    <label class="tp-label">Keterangan</label>
+    <textarea id="biaya-keterangan" class="tp-textarea" rows="4" placeholder="Tulis keterangan..." style="padding:12px;border:1px solid #ddd;border-radius:8px;resize:none;"></textarea>
+  </div>
+
+  <!-- Toggle: Masuk Laba Rugi -->
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #eee;margin-top:8px;">
+    <span style="font-size:14px;color:var(--text-dark);font-weight:500;">Masuk Laba Rugi</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="biaya-masuk-laba-rugi" checked />
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+
+  <div style="height:80px;"></div>
 </div>
-<div class="tp-footer">
-  <button class="btn-simpan" onclick="simpanBiaya()">Simpan</button>
+
+<!-- Footer Button -->
+<div class="tp-footer" style="position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px 16px;border-top:1px solid #eee;">
+  <button class="btn-simpan" onclick="simpanBiaya()" style="width:100%;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:14px;font-size:16px;font-weight:600;cursor:pointer;">
+    Simpan
+  </button>
 </div>
