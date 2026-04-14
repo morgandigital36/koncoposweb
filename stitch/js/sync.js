@@ -2,7 +2,7 @@
 // SYNC v2 — Sinkronisasi LocalStorage ↔ Google Sheets
 // ============================================================
 
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzmFfqFNOa-hGqfJzDKSjAsPG9yDWqL5dz3j6XMeABd5TWPnDAAxcE4fuygjZJSsrbSgg/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyq2XKiq11T_ET5SAAhYLt8ONLpOebpUv1F1iQjaJRPYteSk38E89YT3-QuP1Ka1tLHmg/exec';
 
 // ===== STATE =====
 let _syncStatus  = 'idle';
