@@ -145,7 +145,7 @@ function renderLaporanPenjualan() {
 }
 
 function exportPenjualanPDF() {
-  showToast('Export PDF Penjualan - Coming soon!');
+  exportPenjualanPDF(); // Call from pdf-export.js
 }
 
 function exportPenjualanExcel() {
@@ -240,7 +240,7 @@ function renderLaporanProdukTerjual() {
 }
 
 function exportProdukTerjualPDF() {
-  showToast('Export PDF - Coming soon!');
+  exportProdukTerjualPDF(); // Call from pdf-export.js
 }
 
 function exportProdukTerjualExcel() {
@@ -308,7 +308,7 @@ function renderLaporanPiutang() {
 }
 
 function exportPiutangPDF() {
-  showToast('Export PDF - Coming soon!');
+  exportPiutangPDF(); // Call from pdf-export.js
 }
 
 function exportPiutangExcel() {
@@ -377,7 +377,7 @@ function renderLaporanPembelian() {
 }
 
 function exportPembelianPDF() {
-  showToast('Export PDF - Coming soon!');
+  exportPembelianPDF(); // Call from pdf-export.js
 }
 
 function exportPembelianExcel() {
@@ -435,7 +435,7 @@ function renderLaporanHutangSupplier() {
 }
 
 function exportHutangPDF() {
-  showToast('Export PDF - Coming soon!');
+  exportHutangPDF(); // Call from pdf-export.js
 }
 
 function exportHutangExcel() {
@@ -492,7 +492,7 @@ function renderLaporanPersediaan() {
 }
 
 function exportPersediaanPDF() {
-  showToast('Export PDF - Coming soon!');
+  exportPersediaanPDF(); // Call from pdf-export.js
 }
 
 function exportPersediaanExcel() {
@@ -625,7 +625,7 @@ function renderLaporanLabaRugi() {
 }
 
 function exportLabaRugiPDF() {
-  showToast('Export PDF - Coming soon!');
+  exportLabaRugiPDF(); // Call from pdf-export.js
 }
 
 function exportLabaRugiExcel() {
@@ -734,7 +734,7 @@ function renderLaporanArusKas() {
 }
 
 function exportArusKasPDF() {
-  showToast('Export PDF - Coming soon!');
+  exportArusKasPDF(); // Call from pdf-export.js
 }
 
 function exportArusKasExcel() {
@@ -834,7 +834,7 @@ function renderLaporanBiaya() {
 }
 
 function exportBiayaPDF() {
-  showToast('Export PDF - Coming soon!');
+  exportBiayaPDF(); // Call from pdf-export.js
 }
 
 function exportBiayaExcel() {
