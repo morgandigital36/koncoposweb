@@ -23,7 +23,7 @@ function addPDFHeader(doc, title) {
   // Logo/Title
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
-  doc.text(outlet.nama || 'Koncowrb', 14, 15);
+  doc.text(outlet.nama || 'Mandiri Mart', 14, 15);
   
   // Report Title
   doc.setFontSize(14);
@@ -51,7 +51,7 @@ function addPDFFooter(doc) {
   
   doc.setFontSize(8);
   doc.setTextColor(150);
-  doc.text('Powered by Koncowrb POS', pageWidth / 2, pageHeight - 10, { align: 'center' });
+  doc.text('Powered by Mandiri Mart POS', pageWidth / 2, pageHeight - 10, { align: 'center' });
 }
 
 // ===================================================

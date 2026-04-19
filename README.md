@@ -1,4 +1,4 @@
-# Koncowrb POS - Aplikasi Kasir Modern
+# Mandiri Mart POS - Aplikasi Kasir Modern
 
 Aplikasi Point of Sale (POS) berbasis web yang modern, cepat, dan mudah digunakan. Dibangun dengan vanilla JavaScript dan terintegrasi dengan Google Sheets sebagai database.
 
@@ -164,9 +164,9 @@ MIT License - bebas digunakan untuk personal maupun komersial.
 
 ## 👨‍💻 Author
 
-**Koncowrb Team**
-- Website: [koncowrb.com](https://koncowrb.com)
-- Email: support@koncowrb.com
+**Mandiri Mart Team**
+- Website: [mandirimart.com](https://mandirimart.com)
+- Email: support@mandirimart.com
 
 ## 🙏 Acknowledgments
 

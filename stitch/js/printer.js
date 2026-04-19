@@ -365,7 +365,7 @@ async function testPrint() {
     ...CMD.BOLD_ON,
     ...line('=== TEST PRINT ==='),
     ...CMD.BOLD_OFF,
-    ...line('Koncowrb POS'),
+    ...line('Mandiri Mart POS'),
     ...line(new Date().toLocaleString('id-ID')),
     ...divider(width),
     ...line('Printer OK!'),

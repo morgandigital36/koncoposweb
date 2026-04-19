@@ -1,7 +1,7 @@
 {
-  "name": "Koncowrb POS",
-  "short_name": "Koncowrb",
-  "description": "Aplikasi kasir POS sederhana berbasis web",
+  "name": "Mandiri Mart POS",
+  "short_name": "Mandiri Mart",
+  "description": "Mandiri Mart - aplikasi kasir POS sederhana berbasis web",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

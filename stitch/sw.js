@@ -1,15 +1,15 @@
-// ===== SERVICE WORKER — Koncowrb =====
-// Strategy: Network first ALWAYS — tidak ada cache
+// ===== SERVICE WORKER - Mandiri Mart =====
+// Strategy: Network first ALWAYS - tidak ada cache
 // Vercel sudah handle CDN caching dengan benar
 
-const CACHE_NAME = 'koncowrb-v3';
+const CACHE_NAME = 'mandiri-mart-v3';
 
-// Install — langsung aktif, skip waiting
+// Install - langsung aktif, skip waiting
 self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
-// Activate — hapus SEMUA cache lama tanpa kecuali
+// Activate - hapus SEMUA cache lama tanpa kecuali
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -18,7 +18,7 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Fetch — Network first, NO caching
+// Fetch - Network first, NO caching
 // Semua request langsung ke network
 self.addEventListener('fetch', (e) => {
   // Hanya handle GET requests

@@ -730,7 +730,7 @@ function renderStruk(trx) {
 
   paper.innerHTML = `
     <!-- Outlet name -->
-    <div class="struk-outlet-name">${outlet.nama || 'Koncowrb'}</div>
+    <div class="struk-outlet-name">${outlet.nama || 'Mandiri Mart'}</div>
 
     <div class="struk-paper-divider"></div>
 
@@ -792,7 +792,7 @@ function renderStruk(trx) {
     <!-- Footer -->
     <div class="struk-paper-footer">
       <div>--- Terima Kasih ---</div>
-      <div>${outlet.catatan || 'Powered by Kasir Pos'}</div>
+      <div>${outlet.catatan || 'Powered by Mandiri Mart POS'}</div>
     </div>`;
 }
 
@@ -823,7 +823,7 @@ function shareStruk() {
   const outlet = DB.getObj('outlet');
   const tgl = new Date(trx.tanggal).toLocaleString('id-ID');
   const items = trx.items.map(c => `• ${c.nama} x${c.qty} = ${fmt(c.qty * c.harga)}`).join('\n');
-  const text = `*${outlet.nama || 'Koncowrb'}*\n`
+  const text = `*${outlet.nama || 'Mandiri Mart'}*\n`
     + `Tanggal: ${tgl}\n`
     + `---\n${items}\n---\n`
     + `*Total: ${fmt(trx.total)}*\n`
@@ -832,7 +832,7 @@ function shareStruk() {
     + `\n${outlet.catatan || 'Terima kasih!'}`;
 
   if (navigator.share) {
-    navigator.share({ title: 'Struk ' + (outlet.nama || 'Koncowrb'), text }).catch(() => {});
+    navigator.share({ title: 'Struk ' + (outlet.nama || 'Mandiri Mart'), text }).catch(() => {});
   } else {
     navigator.clipboard?.writeText(text).then(() => showToast('Teks struk disalin!')).catch(() => showToast('Share tidak didukung'));
   }
@@ -845,7 +845,7 @@ function shareWhatsapp() {
   const tgl = new Date(trx.tanggal).toLocaleString('id-ID');
   const items = trx.items.map(c => `• ${c.nama} x${c.qty} = ${fmt(c.qty * c.harga)}`).join('%0A');
   const text = encodeURIComponent(
-    `*${outlet.nama || 'Koncowrb'}*\n`
+    `*${outlet.nama || 'Mandiri Mart'}*\n`
     + `Tanggal: ${tgl}\n`
     + `---\n`
   ) + items + encodeURIComponent(
