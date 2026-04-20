@@ -1,5 +1,5 @@
 // ===================================================
-// PRINTER — Bluetooth Thermal Printer via Web Bluetooth API
+// PRINTER â€” Bluetooth Thermal Printer via Web Bluetooth API
 // ESC/POS commands
 // ===================================================
 
@@ -86,7 +86,7 @@ async function scanBluetoothPrinter() {
     DB.setObj('printer', printerData);
 
     if (nameEl) nameEl.textContent = device.name || 'Printer Bluetooth';
-    if (statusEl) { statusEl.textContent = 'Terhubung ✓'; statusEl.style.color = '#2ecc71'; }
+    if (statusEl) { statusEl.textContent = 'Terhubung âœ“'; statusEl.style.color = '#2ecc71'; }
     if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-link"></i> Terhubung'; btn.style.background = '#2ecc71'; }
 
     device.addEventListener('gattserverdisconnected', () => {
@@ -268,7 +268,7 @@ async function cetakStruk() {
       if (confirm('Printer Bluetooth belum terhubung.\n\nCetak via browser (PDF/Print)?')) {
         cetakViaBrowser(_lastTrx);
       } else {
-        showToast('Hubungkan printer di Pengaturan → Printer');
+        showToast('Hubungkan printer di Pengaturan â†’ Printer');
       }
       return;
     }
@@ -365,7 +365,7 @@ async function testPrint() {
     ...CMD.BOLD_ON,
     ...line('=== TEST PRINT ==='),
     ...CMD.BOLD_OFF,
-    ...line('Mandiri Mart POS'),
+    ...line('KONCOPOS'),
     ...line(new Date().toLocaleString('id-ID')),
     ...divider(width),
     ...line('Printer OK!'),
@@ -414,7 +414,7 @@ function initPengaturanPrinter() {
   const btn = document.getElementById('printer-bt-btn');
   if (cfg.btName && nameEl) nameEl.textContent = cfg.btName;
   if (_btChar && _btDevice?.gatt?.connected) {
-    if (statusEl) { statusEl.textContent = 'Terhubung ✓'; statusEl.style.color = '#2ecc71'; }
+    if (statusEl) { statusEl.textContent = 'Terhubung âœ“'; statusEl.style.color = '#2ecc71'; }
     if (btn) { btn.innerHTML = '<i class="fa-solid fa-link"></i> Terhubung'; btn.style.background = '#2ecc71'; }
   }
 
@@ -458,3 +458,4 @@ function simpanPengaturanPrinter() {
 document.addEventListener('screenInit', (e) => {
   if (e.detail.name === 'pengaturan-printer') initPengaturanPrinter();
 });
+

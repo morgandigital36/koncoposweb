@@ -1,7 +1,7 @@
 {
-  "name": "Mandiri Mart POS",
-  "short_name": "Mandiri Mart",
-  "description": "Mandiri Mart - aplikasi kasir POS sederhana berbasis web",
+  "name": "KONCOPOS",
+  "short_name": "KONCOPOS",
+  "description": "KONCOPOS - aplikasi kasir POS sederhana berbasis web",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -22,3 +22,4 @@
     }
   ]
 }
+

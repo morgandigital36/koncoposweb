@@ -1,5 +1,5 @@
 // ===================================================
-// POS — Product list, Cart, Checkout, Struk
+// POS â€” Product list, Cart, Checkout, Struk
 // ===================================================
 
 let posActiveCat = 'semua';
@@ -331,7 +331,7 @@ function focusKeterangan() {
   document.getElementById('cart-keterangan')?.focus();
 }
 
-// ===== FORM TRANSAKSI — STATE =====
+// ===== FORM TRANSAKSI â€” STATE =====
 const cartForm = {
   tglTransaksi: '',
   tglJthTempo: '',
@@ -427,7 +427,7 @@ function renderPelangganModal() {
   const container = document.getElementById('pelanggan-modal-list');
   if (!container) return;
   if (list.length === 0) {
-    container.innerHTML = `<p style="text-align:center;color:var(--text-light);padding:16px;font-size:13px;">Belum ada pelanggan. Tambah di Pengaturan → Pelanggan.</p>`;
+    container.innerHTML = `<p style="text-align:center;color:var(--text-light);padding:16px;font-size:13px;">Belum ada pelanggan. Tambah di Pengaturan â†’ Pelanggan.</p>`;
     return;
   }
   container.innerHTML = list.map(p => `
@@ -492,7 +492,7 @@ function bukaPickerSales() {
   const container = document.getElementById('sales-modal-list');
   if (!container) return;
   if (list.length === 0) {
-    container.innerHTML = `<p style="text-align:center;color:var(--text-light);padding:16px;font-size:13px;">Belum ada sales. Tambah di Pengaturan → Sales.</p>`;
+    container.innerHTML = `<p style="text-align:center;color:var(--text-light);padding:16px;font-size:13px;">Belum ada sales. Tambah di Pengaturan â†’ Sales.</p>`;
     return;
   }
   container.innerHTML = list.map(s => `
@@ -730,7 +730,7 @@ function renderStruk(trx) {
 
   paper.innerHTML = `
     <!-- Outlet name -->
-    <div class="struk-outlet-name">${outlet.nama || 'Mandiri Mart'}</div>
+    <div class="struk-outlet-name">${outlet.nama || 'KONCOPOS'}</div>
 
     <div class="struk-paper-divider"></div>
 
@@ -792,7 +792,7 @@ function renderStruk(trx) {
     <!-- Footer -->
     <div class="struk-paper-footer">
       <div>--- Terima Kasih ---</div>
-      <div>${outlet.catatan || 'Powered by Mandiri Mart POS'}</div>
+      <div>${outlet.catatan || 'Powered by KONCOPOS'}</div>
     </div>`;
 }
 
@@ -822,8 +822,8 @@ function shareStruk() {
   const trx = _lastTrx;
   const outlet = DB.getObj('outlet');
   const tgl = new Date(trx.tanggal).toLocaleString('id-ID');
-  const items = trx.items.map(c => `• ${c.nama} x${c.qty} = ${fmt(c.qty * c.harga)}`).join('\n');
-  const text = `*${outlet.nama || 'Mandiri Mart'}*\n`
+  const items = trx.items.map(c => `â€¢ ${c.nama} x${c.qty} = ${fmt(c.qty * c.harga)}`).join('\n');
+  const text = `*${outlet.nama || 'KONCOPOS'}*\n`
     + `Tanggal: ${tgl}\n`
     + `---\n${items}\n---\n`
     + `*Total: ${fmt(trx.total)}*\n`
@@ -832,7 +832,7 @@ function shareStruk() {
     + `\n${outlet.catatan || 'Terima kasih!'}`;
 
   if (navigator.share) {
-    navigator.share({ title: 'Struk ' + (outlet.nama || 'Mandiri Mart'), text }).catch(() => {});
+    navigator.share({ title: 'Struk ' + (outlet.nama || 'KONCOPOS'), text }).catch(() => {});
   } else {
     navigator.clipboard?.writeText(text).then(() => showToast('Teks struk disalin!')).catch(() => showToast('Share tidak didukung'));
   }
@@ -843,9 +843,9 @@ function shareWhatsapp() {
   const trx = _lastTrx;
   const outlet = DB.getObj('outlet');
   const tgl = new Date(trx.tanggal).toLocaleString('id-ID');
-  const items = trx.items.map(c => `• ${c.nama} x${c.qty} = ${fmt(c.qty * c.harga)}`).join('%0A');
+  const items = trx.items.map(c => `â€¢ ${c.nama} x${c.qty} = ${fmt(c.qty * c.harga)}`).join('%0A');
   const text = encodeURIComponent(
-    `*${outlet.nama || 'Mandiri Mart'}*\n`
+    `*${outlet.nama || 'KONCOPOS'}*\n`
     + `Tanggal: ${tgl}\n`
     + `---\n`
   ) + items + encodeURIComponent(
@@ -967,7 +967,7 @@ function renderLogItemList(t) {
       <i class="fa-solid fa-receipt" style="color:${statusColor};font-size:16px;"></i>
     </div>
     <div class="log-item-info" onclick="lihatDetailLog('${t.id}')">
-      <div class="log-item-nama">${t.pelanggan || 'Umum'} · ${t.items.length} item</div>
+      <div class="log-item-nama">${t.pelanggan || 'Umum'} Â· ${t.items.length} item</div>
       <div class="log-item-sub">
         <span>${tglStr} ${waktuStr}</span>
         <span style="color:${statusColor};font-weight:600;">${statusLabel}</span>
@@ -1004,7 +1004,7 @@ function renderLogItemGrid(t) {
     <div class="log-grid-pelanggan">${t.pelanggan || 'Umum'}</div>
     <div class="log-grid-items">${t.items.length} item</div>
     <div class="log-grid-total">${fmt(t.total)}</div>
-    <div class="log-grid-date">${tglStr} · ${waktuStr}</div>
+    <div class="log-grid-date">${tglStr} Â· ${waktuStr}</div>
   </div>`;
 }
 
@@ -1032,3 +1032,4 @@ function hapusLogTransaksi(id) {
   renderLogTransaksi();
   showToast('Transaksi dihapus');
 }
+

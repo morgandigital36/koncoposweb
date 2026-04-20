@@ -1,8 +1,8 @@
-// ===== SERVICE WORKER - Mandiri Mart =====
+// ===== SERVICE WORKER - KONCOPOS =====
 // Strategy: Network first ALWAYS - tidak ada cache
 // Vercel sudah handle CDN caching dengan benar
 
-const CACHE_NAME = 'mandiri-mart-v3';
+const CACHE_NAME = 'koncopos-v1';
 
 // Install - langsung aktif, skip waiting
 self.addEventListener('install', () => {
@@ -32,3 +32,4 @@ self.addEventListener('fetch', (e) => {
       })
   );
 });
+

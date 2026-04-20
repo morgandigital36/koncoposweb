@@ -1,17 +1,17 @@
-# Mandiri Mart POS - Aplikasi Kasir Modern
+# KONCOPOS - Aplikasi Kasir Modern
 
 Aplikasi Point of Sale (POS) berbasis web yang modern, cepat, dan mudah digunakan. Dibangun dengan vanilla JavaScript dan terintegrasi dengan Google Sheets sebagai database.
 
-## 🚀 Fitur Utama
+## ðŸš€ Fitur Utama
 
-### 📱 Point of Sale
+### ðŸ“± Point of Sale
 - Interface kasir yang intuitif dan responsif
 - Keranjang belanja dengan edit qty real-time
 - Multiple metode pembayaran (Tunai, Transfer, QRIS, Piutang)
 - Cetak struk otomatis
 - Support barcode scanner
 
-### 📊 Laporan Lengkap
+### ðŸ“Š Laporan Lengkap
 - **Penjualan**: Laporan penjualan, produk terjual, piutang
 - **Pembelian**: Laporan pembelian, hutang supplier
 - **Keuangan**: Laba rugi, arus kas, biaya & pendapatan
@@ -19,24 +19,24 @@ Aplikasi Point of Sale (POS) berbasis web yang modern, cepat, dan mudah digunaka
 - **Sales**: Omset sales, invoice pelanggan/supplier
 - **Jatuh Tempo**: Monitor piutang & hutang
 
-### 📥 Export Data
+### ðŸ“¥ Export Data
 - Export ke Excel (CSV)
 - Export ke PDF dengan layout profesional
 - Filter tanggal & search
 
-### 👥 Manajemen
+### ðŸ‘¥ Manajemen
 - Multi-user dengan role & permissions
 - Manajemen produk, kategori, varian
 - Manajemen pelanggan, supplier, sales
 - Pengaturan outlet & printer
 
-### 🔄 Sinkronisasi
+### ðŸ”„ Sinkronisasi
 - Auto-sync ke Google Sheets
 - Push/Pull data manual
 - Offline-first dengan LocalStorage
 - Background sync otomatis
 
-## 🛠️ Teknologi
+## ðŸ› ï¸ Teknologi
 
 - **Frontend**: Vanilla JavaScript, HTML5, CSS3
 - **Backend**: Google Apps Script
@@ -46,7 +46,7 @@ Aplikasi Point of Sale (POS) berbasis web yang modern, cepat, dan mudah digunaka
 - **Charts**: Chart.js
 - **Icons**: Font Awesome 6
 
-## 📦 Instalasi
+## ðŸ“¦ Instalasi
 
 ### 1. Clone Repository
 ```bash
@@ -81,14 +81,14 @@ npx http-server stitch -p 8000
 
 Buka browser: `http://localhost:8000`
 
-## 📱 PWA (Progressive Web App)
+## ðŸ“± PWA (Progressive Web App)
 
 Aplikasi ini support PWA, bisa di-install di smartphone:
 1. Buka di browser mobile
 2. Tap menu "Add to Home Screen"
 3. Aplikasi akan muncul seperti native app
 
-## 🎨 Screenshot
+## ðŸŽ¨ Screenshot
 
 ### Dashboard
 ![Dashboard](koncowrb_home_dashboard/screen.png)
@@ -99,26 +99,26 @@ Aplikasi ini support PWA, bisa di-install di smartphone:
 ### Pengaturan
 ![Pengaturan](koncowrb_settings_screen/screen.png)
 
-## 📖 Dokumentasi
+## ðŸ“– Dokumentasi
 
 ### Struktur Folder
 ```
 stitch/
-├── gas/              # Google Apps Script
-│   └── Code.gs
-├── icons/            # PWA icons
-├── js/               # JavaScript modules
-│   ├── core.js       # Core functions
-│   ├── auth.js       # Authentication
-│   ├── pos.js        # POS system
-│   ├── laporan.js    # Reports
-│   ├── sync.js       # Sync engine
-│   └── pdf-export.js # PDF generation
-├── pages/            # HTML pages
-├── index.html        # Main entry
-├── style.css         # Styles
-├── manifest.json     # PWA manifest
-└── sw.js            # Service Worker
+â”œâ”€â”€ gas/              # Google Apps Script
+â”‚   â””â”€â”€ Code.gs
+â”œâ”€â”€ icons/            # PWA icons
+â”œâ”€â”€ js/               # JavaScript modules
+â”‚   â”œâ”€â”€ core.js       # Core functions
+â”‚   â”œâ”€â”€ auth.js       # Authentication
+â”‚   â”œâ”€â”€ pos.js        # POS system
+â”‚   â”œâ”€â”€ laporan.js    # Reports
+â”‚   â”œâ”€â”€ sync.js       # Sync engine
+â”‚   â””â”€â”€ pdf-export.js # PDF generation
+â”œâ”€â”€ pages/            # HTML pages
+â”œâ”€â”€ index.html        # Main entry
+â”œâ”€â”€ style.css         # Styles
+â”œâ”€â”€ manifest.json     # PWA manifest
+â””â”€â”€ sw.js            # Service Worker
 ```
 
 ### Database Schema (Google Sheets)
@@ -132,7 +132,7 @@ stitch/
 - Laporan (Penjualan, Pembelian, Stok, dll)
 - Outlet, Settings, Sync Log
 
-## 🔐 Keamanan
+## ðŸ” Keamanan
 
 - Session-based authentication
 - Token expiry (30 hari)
@@ -140,7 +140,7 @@ stitch/
 - User-level data isolation
 - HTTPS required untuk production
 
-## 🚧 Roadmap
+## ðŸš§ Roadmap
 
 - [ ] Multi-outlet support
 - [ ] Inventory forecasting
@@ -149,7 +149,7 @@ stitch/
 - [ ] Advanced analytics & charts
 - [ ] Mobile app (React Native)
 
-## 🤝 Kontribusi
+## ðŸ¤ Kontribusi
 
 Kontribusi sangat diterima! Silakan:
 1. Fork repository
@@ -158,17 +158,17 @@ Kontribusi sangat diterima! Silakan:
 4. Push ke branch (`git push origin feature/AmazingFeature`)
 5. Buat Pull Request
 
-## 📄 Lisensi
+## ðŸ“„ Lisensi
 
 MIT License - bebas digunakan untuk personal maupun komersial.
 
-## 👨‍💻 Author
+## ðŸ‘¨â€ðŸ’» Author
 
-**Mandiri Mart Team**
-- Website: [mandirimart.com](https://mandirimart.com)
-- Email: support@mandirimart.com
+**KONCOPOS Team**
+- Support: Sesuaikan kontak support sesuai deployment Anda
+- Brand: KONCOPOS
 
-## 🙏 Acknowledgments
+## ðŸ™ Acknowledgments
 
 - Font Awesome untuk icons
 - jsPDF untuk PDF generation
@@ -177,6 +177,8 @@ MIT License - bebas digunakan untuk personal maupun komersial.
 
 ---
 
-⭐ Jika project ini membantu, berikan star di GitHub!
+â­ Jika project ini membantu, berikan star di GitHub!
 
 # koncoposnew
+
+# koncoposweb
