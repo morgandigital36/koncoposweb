@@ -4,7 +4,7 @@
   <span style="width:24px;"></span>
 </div>
 
-<div class="screen-content" style="padding:16px;">
+<div class="screen-content" style="padding:16px;padding-bottom:calc(var(--nav-height) + 96px);">
   <!-- Radio Button: Biaya / Pendapatan -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
     <label class="biaya-radio-card" onclick="setBiayaTipe('biaya')">
@@ -82,11 +82,11 @@
     </label>
   </div>
 
-  <div style="height:80px;"></div>
+  <div style="height:24px;"></div>
 </div>
 
 <!-- Footer Button -->
-<div class="tp-footer" style="position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px 16px;border-top:1px solid #eee;">
+<div class="tp-footer" style="position:fixed;left:0;right:0;bottom:var(--nav-height);background:#fff;padding:12px 16px calc(12px + env(safe-area-inset-bottom, 0px));border-top:1px solid #eee;z-index:9;">
   <button class="btn-simpan" onclick="simpanBiaya()" style="width:100%;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:14px;font-size:16px;font-weight:600;cursor:pointer;">
     Simpan
   </button>
