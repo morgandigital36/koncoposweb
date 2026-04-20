@@ -136,7 +136,8 @@ function createCartItemFromProduct(product, overrides = {}) {
   const qty = Math.max(1, Number(overrides.qty ?? 1) || 1);
   const baseHarga = Math.max(0, Number(overrides.baseHarga ?? overrides.harga ?? product.hargaJual ?? 0) || 0);
   const hargaBeli = Math.max(0, Number(overrides.hargaBeli ?? product.hargaBeli ?? 0) || 0);
-  const diskonPct = Math.max(0, Number(overrides.diskonPct ?? 0) || 0);
+  const diskonPct = Math.max(0, Number(overrides.diskonPct ?? product.diskonPct ?? 0) || 0);
+  const diskonMode = overrides.diskonMode || (overrides.diskonRp != null ? 'rp' : 'pct');
   const rawDiskonRp = overrides.diskonRp != null
     ? Number(overrides.diskonRp)
     : Math.round(baseHarga * qty * (diskonPct / 100));
@@ -153,6 +154,7 @@ function createCartItemFromProduct(product, overrides = {}) {
     unit: overrides.unit ?? product.unit ?? 'Pcs',
     diskonPct,
     diskonRp,
+    diskonMode,
     subtotal,
     keterangan: overrides.keterangan ?? '',
   };
@@ -183,13 +185,24 @@ function syncCartItemComputedValues(item) {
   if (!item) return item;
   const qty = Math.max(1, parseInt(item.qty, 10) || 1);
   const baseHarga = getCartItemBasePrice(item);
-  const subtotal = Math.max(0, getCartItemSubtotal({ ...item, qty, baseHarga }));
-  const diskonRp = Math.max(0, Math.min(baseHarga * qty, baseHarga * qty - subtotal));
-  const diskonPct = baseHarga * qty > 0 ? (diskonRp / (baseHarga * qty)) * 100 : 0;
+  const gross = baseHarga * qty;
+  const diskonMode = item.diskonMode || ((Number(item.diskonPct) || 0) > 0 ? 'pct' : 'rp');
+  let diskonPct = Math.max(0, Number(item.diskonPct ?? 0) || 0);
+  let diskonRp = Math.max(0, Number(item.diskonRp ?? 0) || 0);
+
+  if (diskonMode === 'pct') {
+    diskonRp = Math.round(gross * (diskonPct / 100));
+  } else {
+    diskonRp = Math.min(gross, diskonRp);
+    diskonPct = gross > 0 ? (diskonRp / gross) * 100 : 0;
+  }
+
+  const subtotal = Math.max(0, gross - diskonRp);
   item.qty = qty;
   item.baseHarga = baseHarga;
   item.diskonRp = Math.round(diskonRp);
   item.diskonPct = Math.max(0, Math.min(100, diskonPct));
+  item.diskonMode = diskonMode;
   item.subtotal = Math.round(subtotal);
   item.harga = qty > 0 ? item.subtotal / qty : baseHarga;
   item.hargaBeli = Math.max(0, Number(item.hargaBeli ?? 0) || 0);
@@ -319,6 +332,7 @@ function editCartItem(cartItemId) {
   document.getElementById('eci-harga-jual').value = Math.round(getCartItemBasePrice(item));
   document.getElementById('eci-diskon-pct').value = Number((item.diskonPct || 0).toFixed(2));
   document.getElementById('eci-diskon-rp').value = Math.round(item.diskonRp || 0);
+  document.getElementById('eci-diskon-mode').value = item.diskonMode || 'pct';
   document.getElementById('eci-keterangan').value = item.keterangan || '';
   document.getElementById('eci-qty').value = item.qty;
   updateEditCartItemSubtotal();
@@ -679,9 +693,24 @@ function hitungKembalian() {
   }
 }
 
+function validatePiutangCheckout() {
+  if (!cartForm.pelangganId && !cartForm.pelangganNama) {
+    showToast('Pelanggan wajib diisi untuk piutang');
+    bukaPickerPelanggan();
+    return false;
+  }
+  if (!cartForm.tglJthTempo) {
+    showToast('Tanggal jatuh tempo wajib diisi untuk piutang');
+    bukaPickerTanggal('tgl-jth-tempo');
+    return false;
+  }
+  return true;
+}
+
 function prosesCheckout() {
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
   const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  if (selectedPayMethod === 'Piutang' && !validatePiutangCheckout()) return;
   if (selectedPayMethod === 'Tunai') {
     const input = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
     const bayar = parseFloat(input?.value) || 0;
@@ -692,6 +721,7 @@ function prosesCheckout() {
 
 function prosesCheckoutPiutang() {
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
+  if (!validatePiutangCheckout()) return;
   _simpanTransaksi('Piutang');
 }
 
@@ -1008,17 +1038,21 @@ function updateEditCartItemSubtotal(source = '') {
   let diskonPct = Math.max(0, Number(document.getElementById('eci-diskon-pct')?.value) || 0);
   let diskonRp = Math.max(0, Number(document.getElementById('eci-diskon-rp')?.value) || 0);
   const gross = hargaJual * qty;
+  const modeEl = document.getElementById('eci-diskon-mode');
+  let diskonMode = modeEl?.value || 'pct';
 
   if (source === 'pct') {
+    diskonMode = 'pct';
     diskonRp = Math.round(gross * (diskonPct / 100));
     document.getElementById('eci-diskon-rp').value = diskonRp;
   } else if (source === 'rp') {
+    diskonMode = 'rp';
     diskonRp = Math.min(gross, diskonRp);
     diskonPct = gross > 0 ? (diskonRp / gross) * 100 : 0;
     document.getElementById('eci-diskon-pct').value = Number(diskonPct.toFixed(2));
   } else {
     diskonRp = Math.min(gross, diskonRp);
-    if (gross > 0 && diskonPct > 0) {
+    if (diskonMode === 'pct') {
       diskonRp = Math.round(gross * (diskonPct / 100));
       document.getElementById('eci-diskon-rp').value = diskonRp;
     } else {
@@ -1028,6 +1062,7 @@ function updateEditCartItemSubtotal(source = '') {
   }
 
   const subtotal = Math.max(0, gross - diskonRp);
+  if (modeEl) modeEl.value = diskonMode;
   document.getElementById('eci-qty').value = qty;
   const subtotalEl = document.getElementById('eci-subtotal');
   if (subtotalEl) subtotalEl.value = fmt(subtotal);
@@ -1049,8 +1084,8 @@ function simpanEditCartItem() {
   const qty = Math.max(1, parseInt(document.getElementById('eci-qty')?.value, 10) || 1);
   const hargaBeli = Math.max(0, Number(document.getElementById('eci-harga-beli')?.value) || 0);
   const baseHarga = Math.max(0, Number(document.getElementById('eci-harga-jual')?.value) || 0);
-  const diskonPct = Math.max(0, Number(document.getElementById('eci-diskon-pct')?.value) || 0);
   const diskonRp = Math.max(0, Number(document.getElementById('eci-diskon-rp')?.value) || 0);
+  const diskonMode = document.getElementById('eci-diskon-mode')?.value || 'pct';
   const gross = baseHarga * qty;
   const finalDiskonRp = Math.min(gross, Math.round(diskonRp));
   const subtotal = Math.max(0, gross - finalDiskonRp);
@@ -1061,6 +1096,7 @@ function simpanEditCartItem() {
     baseHarga,
     diskonPct: gross > 0 ? (finalDiskonRp / gross) * 100 : 0,
     diskonRp: finalDiskonRp,
+    diskonMode,
     subtotal,
     harga: qty > 0 ? subtotal / qty : baseHarga,
     keterangan: document.getElementById('eci-keterangan')?.value.trim() || '',

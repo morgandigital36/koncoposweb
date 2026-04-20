@@ -75,13 +75,12 @@
 
 <!-- FOOTER BAYAR (sticky) -->
 <div id="cart-footer" class="cart-footer" style="display:none;">
-  <button class="cart-btn-draft" onclick="simpanDraft()">
+  <button class="cart-btn-draft" onclick="simpanDraft()" title="Simpan Draft" aria-label="Simpan Draft">
     <i class="fa-regular fa-floppy-disk"></i>
-    Draft
   </button>
   <button class="cart-btn-belum-bayar" onclick="prosesCheckoutPiutang()">
     <i class="fa-solid fa-file-invoice-dollar"></i>
-    Belum Bayar
+    Piutang
   </button>
   <button class="cart-btn-bayar" onclick="bukaModalBayar()">
     <i class="fa-solid fa-cash-register"></i>
@@ -98,6 +97,7 @@
     </div>
     <p class="cart-edit-hint">*Diskon update otomatis berdasarkan %.</p>
     <input type="hidden" id="eci-cart-item-id" />
+    <input type="hidden" id="eci-diskon-mode" value="pct" />
 
     <div class="cart-edit-grid">
       <label class="cart-edit-field">
