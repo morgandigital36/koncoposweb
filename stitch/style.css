@@ -4504,14 +4504,19 @@ body {
 
 .cart-edit-qty-row {
   display: grid;
-  grid-template-columns: 80px 1fr 80px;
+  grid-template-columns: 72px minmax(0, 1fr) 72px;
   gap: 0;
-  width: min(248px, calc(100% - 32px));
+  width: calc(100% - 24px);
+  max-width: 280px;
   margin: 22px auto 16px;
+  overflow: hidden;
+  border-radius: 14px;
 }
 
 .cart-edit-qty-btn,
 .cart-edit-qty-row input {
+  width: 100%;
+  min-width: 0;
   height: 52px;
   border: 1px solid #ffd0da;
   font-size: 28px;
@@ -4530,6 +4535,14 @@ body {
   border-right: none;
   color: var(--text-dark);
   background: #fff;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.cart-edit-qty-row input::-webkit-outer-spin-button,
+.cart-edit-qty-row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .cart-edit-delete {
@@ -4603,6 +4616,7 @@ body {
   .cart-edit-qty-row {
     width: calc(100% - 24px);
     grid-template-columns: 72px 1fr 72px;
+    max-width: 280px;
   }
 
   .cart-edit-actions {
