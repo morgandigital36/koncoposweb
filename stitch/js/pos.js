@@ -7,6 +7,7 @@ let cart = [];
 let selectedPayMethod = 'Tunai';
 let _lastTrx = null;
 let posViewMode = 'list'; // 'list' or 'grid'
+let _isCartSubmitting = false;
 
 function getActivePosSettings() {
   return typeof getPosSettings === 'function'
@@ -131,12 +132,24 @@ function filterPosProducts() {
 }
 
 // ===== CART =====
+function createCartItemFromProduct(product, overrides = {}) {
+  return {
+    cartItemId: overrides.cartItemId || 'cart_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    productId: overrides.productId || product.id,
+    nama: overrides.nama ?? product.nama,
+    harga: overrides.harga ?? product.hargaJual,
+    hargaBeli: overrides.hargaBeli ?? product.hargaBeli ?? 0,
+    qty: overrides.qty ?? 1,
+    unit: overrides.unit ?? product.unit ?? 'Pcs',
+  };
+}
+
 function addToCart(productId) {
   const p = getProducts().find(x => x.id === productId);
   if (!p) return;
-  const existing = cart.find(c => c.id === productId);
+  const existing = cart.find(c => c.productId === productId);
   if (existing) { existing.qty++; }
-  else { cart.push({ id: productId, nama: p.nama, harga: p.hargaJual, hargaBeli: p.hargaBeli || 0, qty: 1, unit: p.unit || 'Pcs' }); }
+  else { cart.push(createCartItemFromProduct(p)); }
   updateCartBar();
   showToast(p.nama + ' ditambahkan');
 }
@@ -154,18 +167,29 @@ function clearCart() {
   if (cart.length === 0) return;
   if (!confirm('Kosongkan keranjang?')) return;
   cart = [];
+  resetCartForm();
   updateCartBar();
   renderCartScreen();
   showToast('Keranjang dikosongkan');
 }
 
-function changeQty(productId, delta) {
-  const idx = cart.findIndex(c => c.id === productId);
+function changeQty(cartItemId, delta) {
+  const idx = cart.findIndex(c => c.cartItemId === cartItemId);
   if (idx === -1) return;
   cart[idx].qty += delta;
   if (cart[idx].qty <= 0) cart.splice(idx, 1);
   updateCartBar();
   renderCartScreen();
+}
+
+function removeCartItem(cartItemId) {
+  const item = cart.find(c => c.cartItemId === cartItemId);
+  if (!item) return;
+  if (!confirm(`Hapus "${item.nama}" dari keranjang?`)) return;
+  cart = cart.filter(c => c.cartItemId !== cartItemId);
+  updateCartBar();
+  renderCartScreen();
+  showToast('Item dihapus');
 }
 
 function renderCartScreen() {
@@ -183,20 +207,20 @@ function renderCartScreen() {
   }
 
   container.innerHTML = `
-    <p style="font-size:12px;color:var(--primary);font-weight:600;margin-bottom:6px;">*Klik produk untuk edit.</p>
+    <p style="font-size:12px;color:var(--primary);font-weight:600;margin-bottom:6px;">*Klik produk untuk edit qty, gunakan copy untuk split baris.</p>
     <div class="cart-header-row">
       <span>Produk</span><span>Subtotal</span>
     </div>
     ${cart.map(c => `
-    <div class="cart-item" onclick="editCartItem('${c.id}')">
+    <div class="cart-item" onclick="editCartItem('${c.cartItemId}')">
       <div class="cart-item-qty-col">
-        <button class="cart-qty-btn-sm" onclick="event.stopPropagation();changeQty('${c.id}',1)">
+        <button class="cart-qty-btn-sm" onclick="event.stopPropagation();changeQty('${c.cartItemId}',1)">
           <i class="fa-solid fa-chevron-up"></i>
         </button>
         <div class="cart-item-photo">
           <span>${c.nama.substring(0,2).toUpperCase()}</span>
         </div>
-        <button class="cart-qty-btn-sm" onclick="event.stopPropagation();changeQty('${c.id}',-1)">
+        <button class="cart-qty-btn-sm" onclick="event.stopPropagation();changeQty('${c.cartItemId}',-1)">
           <i class="fa-solid fa-chevron-down"></i>
         </button>
       </div>
@@ -204,33 +228,39 @@ function renderCartScreen() {
         <div class="cart-item-nama">${c.nama}</div>
         <div class="cart-item-harga">${c.qty} ${c.unit} x ${fmt(c.harga)}</div>
         <div class="cart-item-modal">Modal: <span style="color:var(--primary);">${fmt(c.hargaBeli||0)}</span>, Laba: <span style="color:var(--primary);">${fmt((c.harga-(c.hargaBeli||0))*c.qty)}</span></div>
-        <div class="cart-item-copy" onclick="event.stopPropagation();copyCartItem('${c.id}')">
-          <i class="fa-regular fa-copy"></i> Copy...
+        <div class="cart-item-actions-row">
+          <div class="cart-item-copy" onclick="event.stopPropagation();copyCartItem('${c.cartItemId}')">
+            <i class="fa-regular fa-copy"></i> Copy
+          </div>
+          <button class="cart-item-remove" onclick="event.stopPropagation();removeCartItem('${c.cartItemId}')" title="Hapus item">
+            <i class="fa-solid fa-trash"></i> Hapus
+          </button>
         </div>
       </div>
       <div class="cart-item-subtotal">${fmt(c.qty * c.harga)}</div>
     </div>`).join('')}`;
 
   updateCartSummary();
+  syncCartFormInput();
 }
 
-function editCartItem(id) {
-  const item = cart.find(c => c.id === id);
+function editCartItem(cartItemId) {
+  const item = cart.find(c => c.cartItemId === cartItemId);
   if (!item) return;
   const val = prompt(`Edit qty "${item.nama}":`, item.qty);
   if (val === null) return;
   const qty = parseInt(val);
   if (isNaN(qty) || qty < 0) { showToast('Qty tidak valid'); return; }
-  if (qty === 0) cart = cart.filter(c => c.id !== id);
+  if (qty === 0) cart = cart.filter(c => c.cartItemId !== cartItemId);
   else item.qty = qty;
   updateCartBar();
   renderCartScreen();
 }
 
-function copyCartItem(id) {
-  const item = cart.find(c => c.id === id);
+function copyCartItem(cartItemId) {
+  const item = cart.find(c => c.cartItemId === cartItemId);
   if (!item) return;
-  cart.push({ ...item, id: item.id + '_' + Date.now() });
+  cart.push(createCartItemFromProduct({ ...item, id: item.productId }, { ...item, qty: item.qty }));
   updateCartBar();
   renderCartScreen();
   showToast('Item disalin');
@@ -341,11 +371,17 @@ const cartForm = {
   jenisPenjualan: '',
   salesId: null,
   salesNama: '',
+  catatan: '',
 };
 
+function ensureCartFormDefaults() {
+  if (!cartForm.tglTransaksi) {
+    cartForm.tglTransaksi = new Date().toISOString().split('T')[0];
+  }
+}
+
 function resetCartForm() {
-  const today = new Date().toISOString().split('T')[0];
-  cartForm.tglTransaksi = today;
+  cartForm.tglTransaksi = new Date().toISOString().split('T')[0];
   cartForm.tglJthTempo = '';
   cartForm.pelangganId = null;
   cartForm.pelangganNama = '';
@@ -353,7 +389,26 @@ function resetCartForm() {
   cartForm.jenisPenjualan = '';
   cartForm.salesId = null;
   cartForm.salesNama = '';
+  cartForm.catatan = '';
   _updateCartFormLabels();
+  syncCartFormInput();
+}
+
+function syncCartFormInput() {
+  const noteEl = document.getElementById('cart-keterangan');
+  if (noteEl && noteEl.value !== cartForm.catatan) {
+    noteEl.value = cartForm.catatan || '';
+  }
+}
+
+function updateCartNote(value) {
+  cartForm.catatan = value;
+}
+
+function hydrateCartScreen() {
+  ensureCartFormDefaults();
+  _updateCartFormLabels();
+  syncCartFormInput();
 }
 
 function _updateCartFormLabels() {
@@ -570,7 +625,9 @@ function prosesCheckoutPiutang() {
 }
 
 function simpanDraft() {
+  if (_isCartSubmitting) return;
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
+  _isCartSubmitting = true;
   
   const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
   const transaksi = {
@@ -586,7 +643,7 @@ function simpanDraft() {
     items: [...cart],
     total,
     metodePembayaran: 'Draft',
-    catatan: document.getElementById('cart-keterangan')?.value.trim() || '',
+    catatan: cartForm.catatan.trim() || '',
     bayar: 0,
     kembalian: 0,
     isDraft: true, // Transaksi draft
@@ -607,7 +664,7 @@ function simpanDraft() {
     autoSync('transaksiItems', 'create', {
       id: 'ti_' + transaksi.id + '_' + idx,
       transaksiId: transaksi.id,
-      produkId: item.id,
+      produkId: item.productId,
       nama: item.nama,
       harga: item.harga,
       hargaBeli: item.hargaBeli || 0,
@@ -620,13 +677,17 @@ function simpanDraft() {
   
   // Clear cart
   cart = [];
+  resetCartForm();
   updateCartBar();
   
   showToast('Draft disimpan!');
   switchScreen('pos');
+  _isCartSubmitting = false;
 }
 
 function _simpanTransaksi(metode) {
+  if (_isCartSubmitting) return;
+  _isCartSubmitting = true;
   const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
   const bayarInput = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
   const bayar = metode === 'Tunai' ? (parseFloat(bayarInput?.value) || 0) : total;
@@ -643,7 +704,7 @@ function _simpanTransaksi(metode) {
     items: [...cart],
     total,
     metodePembayaran: metode,
-    catatan: document.getElementById('cart-keterangan')?.value.trim() || '',
+    catatan: cartForm.catatan.trim() || '',
     bayar,
     kembalian: bayar - total,
     isDraft: false, // Transaksi selesai, bukan draft
@@ -657,12 +718,13 @@ function _simpanTransaksi(metode) {
   // Kurangi stok
   const products = getProducts();
   cart.forEach(c => {
-    const p = products.find(x => x.id === c.id);
+    const p = products.find(x => x.id === c.productId);
     if (p && p.pantauStok !== false) p.stok = Math.max(0, (p.stok ?? p.stokAwal ?? 0) - c.qty);
   });
   saveProducts(products);
   tutupModalBayar();
   cart = [];
+  resetCartForm();
   updateCartBar();
   // Auto-sync transaksi ke GAS
   autoSync('transaksi', 'create', transaksi);
@@ -671,7 +733,7 @@ function _simpanTransaksi(metode) {
     autoSync('transaksiItems', 'create', {
       id: 'ti_' + transaksi.id + '_' + idx,
       transaksiId: transaksi.id,
-      produkId: item.id,
+      produkId: item.productId,
       nama: item.nama,
       harga: item.harga,
       hargaBeli: item.hargaBeli || 0,
@@ -683,7 +745,12 @@ function _simpanTransaksi(metode) {
   });
   // Auto-sync stok produk yang berubah
   products.forEach(p => autoSync('produk', 'update', p, p.id));
-  switchScreen('struk').then(() => renderStruk(transaksi));
+  switchScreen('struk').then(() => {
+    renderStruk(transaksi);
+    _isCartSubmitting = false;
+  }).catch(() => {
+    _isCartSubmitting = false;
+  });
 }
 
 function renderStruk(trx) {
@@ -860,7 +927,7 @@ function shareWhatsapp() {
 document.addEventListener('screenInit', (e) => {
   const { name } = e.detail;
   if (name === 'pos') { applyPosSettings(); renderPosProducts(); updateCartBar(); }
-  if (name === 'keranjang') { resetCartForm(); renderCartScreen(); }
+  if (name === 'keranjang') { hydrateCartScreen(); renderCartScreen(); }
   if (name === 'checkout') initCheckout();
   if (name === 'log-transaksi') { initLogTransaksi(); renderLogTransaksi(); }
 });
