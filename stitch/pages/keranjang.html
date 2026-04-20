@@ -89,6 +89,75 @@
   </button>
 </div>
 
+<!-- MODAL: EDIT ITEM KERANJANG -->
+<div id="modal-edit-cart-item" class="modal-overlay" style="display:none;" onclick="tutupModalEditCartItem()">
+  <div class="modal-sheet cart-edit-modal-sheet" onclick="event.stopPropagation()">
+    <div class="cart-edit-modal-header">
+      <i class="fa-solid fa-arrow-left cart-edit-back" onclick="tutupModalEditCartItem()"></i>
+      <span id="eci-title" class="cart-edit-title">Edit Item</span>
+    </div>
+    <p class="cart-edit-hint">*Diskon update otomatis berdasarkan %.</p>
+    <input type="hidden" id="eci-cart-item-id" />
+
+    <div class="cart-edit-grid">
+      <label class="cart-edit-field">
+        <span>Modal</span>
+        <div class="cart-edit-input-wrap">
+          <span>Rp</span>
+          <input type="number" id="eci-harga-beli" value="0" min="0" oninput="updateEditCartItemSubtotal()" />
+        </div>
+      </label>
+      <label class="cart-edit-field">
+        <span>Harga Jual</span>
+        <div class="cart-edit-input-wrap">
+          <span>Rp</span>
+          <input type="number" id="eci-harga-jual" value="0" min="0" oninput="updateEditCartItemSubtotal()" />
+        </div>
+      </label>
+      <label class="cart-edit-field">
+        <span>Diskon %</span>
+        <div class="cart-edit-input-wrap cart-edit-input-icon">
+          <input type="number" id="eci-diskon-pct" value="0" min="0" step="0.01" oninput="updateEditCartItemSubtotal('pct')" />
+          <i class="fa-solid fa-percent"></i>
+        </div>
+      </label>
+      <label class="cart-edit-field">
+        <span>Diskon Rp</span>
+        <div class="cart-edit-input-wrap">
+          <span>Rp</span>
+          <input type="number" id="eci-diskon-rp" value="0" min="0" oninput="updateEditCartItemSubtotal('rp')" />
+        </div>
+      </label>
+    </div>
+
+    <label class="cart-edit-field cart-edit-field-full">
+      <span>Subtotal</span>
+      <div class="cart-edit-input-wrap">
+        <span>Rp</span>
+        <input type="text" id="eci-subtotal" value="Rp0" readonly />
+      </div>
+    </label>
+
+    <label class="cart-edit-field cart-edit-field-full">
+      <span>Keterangan</span>
+      <textarea id="eci-keterangan" rows="2" placeholder=""></textarea>
+    </label>
+
+    <div class="cart-edit-qty-row">
+      <button type="button" class="cart-edit-qty-btn" onclick="changeEditCartQty(-1)">-</button>
+      <input type="number" id="eci-qty" value="1" min="1" oninput="updateEditCartItemSubtotal()" />
+      <button type="button" class="cart-edit-qty-btn" onclick="changeEditCartQty(1)">+</button>
+    </div>
+
+    <button type="button" class="cart-edit-delete" onclick="hapusDariModalEditCartItem()">[ Hapus dari keranjang ]</button>
+
+    <div class="cart-edit-actions">
+      <button type="button" class="cart-edit-cancel" onclick="tutupModalEditCartItem()">Batal</button>
+      <button type="button" class="cart-edit-save" onclick="simpanEditCartItem()">Simpan</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL BAYAR -->
 <div id="modal-bayar" class="modal-overlay" style="display:none;" onclick="tutupModalBayar()">
   <div class="modal-sheet" onclick="event.stopPropagation()" style="gap:0;padding:16px 16px 28px;">

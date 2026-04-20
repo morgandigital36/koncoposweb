@@ -133,22 +133,75 @@ function filterPosProducts() {
 
 // ===== CART =====
 function createCartItemFromProduct(product, overrides = {}) {
+  const qty = Math.max(1, Number(overrides.qty ?? 1) || 1);
+  const baseHarga = Math.max(0, Number(overrides.baseHarga ?? overrides.harga ?? product.hargaJual ?? 0) || 0);
+  const hargaBeli = Math.max(0, Number(overrides.hargaBeli ?? product.hargaBeli ?? 0) || 0);
+  const diskonPct = Math.max(0, Number(overrides.diskonPct ?? 0) || 0);
+  const rawDiskonRp = overrides.diskonRp != null
+    ? Number(overrides.diskonRp)
+    : Math.round(baseHarga * qty * (diskonPct / 100));
+  const diskonRp = Math.max(0, Math.min(baseHarga * qty, rawDiskonRp || 0));
+  const subtotal = Math.max(0, baseHarga * qty - diskonRp);
   return {
     cartItemId: overrides.cartItemId || 'cart_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
     productId: overrides.productId || product.id,
     nama: overrides.nama ?? product.nama,
-    harga: overrides.harga ?? product.hargaJual,
-    hargaBeli: overrides.hargaBeli ?? product.hargaBeli ?? 0,
-    qty: overrides.qty ?? 1,
+    harga: qty > 0 ? subtotal / qty : baseHarga,
+    baseHarga,
+    hargaBeli,
+    qty,
     unit: overrides.unit ?? product.unit ?? 'Pcs',
+    diskonPct,
+    diskonRp,
+    subtotal,
+    keterangan: overrides.keterangan ?? '',
   };
+}
+
+function getCartItemBasePrice(item) {
+  return Math.max(0, Number(item?.baseHarga ?? item?.harga ?? 0) || 0);
+}
+
+function getCartItemDiscountValue(item) {
+  const qty = Math.max(0, Number(item?.qty) || 0);
+  const baseHarga = getCartItemBasePrice(item);
+  const maxDiscount = baseHarga * qty;
+  return Math.max(0, Math.min(maxDiscount, Number(item?.diskonRp ?? 0) || 0));
+}
+
+function getCartItemSubtotal(item) {
+  const qty = Math.max(0, Number(item?.qty) || 0);
+  const baseHarga = getCartItemBasePrice(item);
+  if (!qty) return 0;
+  if (item?.subtotal != null && Number.isFinite(Number(item.subtotal))) {
+    return Math.max(0, Number(item.subtotal) || 0);
+  }
+  return Math.max(0, baseHarga * qty - getCartItemDiscountValue(item));
+}
+
+function syncCartItemComputedValues(item) {
+  if (!item) return item;
+  const qty = Math.max(1, parseInt(item.qty, 10) || 1);
+  const baseHarga = getCartItemBasePrice(item);
+  const subtotal = Math.max(0, getCartItemSubtotal({ ...item, qty, baseHarga }));
+  const diskonRp = Math.max(0, Math.min(baseHarga * qty, baseHarga * qty - subtotal));
+  const diskonPct = baseHarga * qty > 0 ? (diskonRp / (baseHarga * qty)) * 100 : 0;
+  item.qty = qty;
+  item.baseHarga = baseHarga;
+  item.diskonRp = Math.round(diskonRp);
+  item.diskonPct = Math.max(0, Math.min(100, diskonPct));
+  item.subtotal = Math.round(subtotal);
+  item.harga = qty > 0 ? item.subtotal / qty : baseHarga;
+  item.hargaBeli = Math.max(0, Number(item.hargaBeli ?? 0) || 0);
+  item.keterangan = item.keterangan || '';
+  return item;
 }
 
 function addToCart(productId) {
   const p = getProducts().find(x => x.id === productId);
   if (!p) return;
   const existing = cart.find(c => c.productId === productId);
-  if (existing) { existing.qty++; }
+  if (existing) { existing.qty++; syncCartItemComputedValues(existing); }
   else { cart.push(createCartItemFromProduct(p)); }
   updateCartBar();
   showToast(p.nama + ' ditambahkan');
@@ -156,7 +209,7 @@ function addToCart(productId) {
 
 function updateCartBar() {
   const totalItems = cart.reduce((s, c) => s + c.qty, 0);
-  const totalHarga = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const totalHarga = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
   const countEl = document.getElementById('cartCount');
   const totalEl = document.getElementById('cartTotal');
   if (countEl) countEl.textContent = totalItems + ' Items';
@@ -178,6 +231,7 @@ function changeQty(cartItemId, delta) {
   if (idx === -1) return;
   cart[idx].qty += delta;
   if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  else syncCartItemComputedValues(cart[idx]);
   updateCartBar();
   renderCartScreen();
 }
@@ -211,7 +265,13 @@ function renderCartScreen() {
     <div class="cart-header-row">
       <span>Produk</span><span>Subtotal</span>
     </div>
-    ${cart.map(c => `
+    ${cart.map(c => {
+      syncCartItemComputedValues(c);
+      const subtotal = getCartItemSubtotal(c);
+      const totalModal = (c.hargaBeli || 0) * c.qty;
+      const totalLaba = subtotal - totalModal;
+      const hasDiscount = (c.diskonRp || 0) > 0;
+      return `
     <div class="cart-item" onclick="editCartItem('${c.cartItemId}')">
       <div class="cart-item-qty-col">
         <button class="cart-qty-btn-sm" onclick="event.stopPropagation();changeQty('${c.cartItemId}',1)">
@@ -226,8 +286,10 @@ function renderCartScreen() {
       </div>
       <div class="cart-item-info">
         <div class="cart-item-nama">${c.nama}</div>
-        <div class="cart-item-harga">${c.qty} ${c.unit} x ${fmt(c.harga)}</div>
-        <div class="cart-item-modal">Modal: <span style="color:var(--primary);">${fmt(c.hargaBeli||0)}</span>, Laba: <span style="color:var(--primary);">${fmt((c.harga-(c.hargaBeli||0))*c.qty)}</span></div>
+        <div class="cart-item-harga">${c.qty} ${c.unit} x ${fmt(getCartItemBasePrice(c))}</div>
+        <div class="cart-item-modal">Modal: <span style="color:var(--primary);">${fmt(c.hargaBeli||0)}</span>, Laba: <span style="color:var(--primary);">${fmt(totalLaba)}</span></div>
+        ${hasDiscount ? `<div class="cart-item-edit-note">Diskon ${c.diskonPct > 0 ? `${Number(c.diskonPct.toFixed(2))}%` : ''}${c.diskonPct > 0 ? ' · ' : ''}${fmt(c.diskonRp || 0)}</div>` : ''}
+        ${c.keterangan ? `<div class="cart-item-edit-note">${c.keterangan}</div>` : ''}
         <div class="cart-item-actions-row">
           <div class="cart-item-copy" onclick="event.stopPropagation();copyCartItem('${c.cartItemId}')">
             <i class="fa-regular fa-copy"></i> Copy
@@ -237,8 +299,9 @@ function renderCartScreen() {
           </button>
         </div>
       </div>
-      <div class="cart-item-subtotal">${fmt(c.qty * c.harga)}</div>
-    </div>`).join('')}`;
+      <div class="cart-item-subtotal">${fmt(subtotal)}</div>
+    </div>`;
+    }).join('')}`;
 
   updateCartSummary();
   syncCartFormInput();
@@ -247,14 +310,19 @@ function renderCartScreen() {
 function editCartItem(cartItemId) {
   const item = cart.find(c => c.cartItemId === cartItemId);
   if (!item) return;
-  const val = prompt(`Edit qty "${item.nama}":`, item.qty);
-  if (val === null) return;
-  const qty = parseInt(val);
-  if (isNaN(qty) || qty < 0) { showToast('Qty tidak valid'); return; }
-  if (qty === 0) cart = cart.filter(c => c.cartItemId !== cartItemId);
-  else item.qty = qty;
-  updateCartBar();
-  renderCartScreen();
+  syncCartItemComputedValues(item);
+  const modal = document.getElementById('modal-edit-cart-item');
+  if (!modal) return;
+  document.getElementById('eci-title').textContent = item.nama;
+  document.getElementById('eci-cart-item-id').value = item.cartItemId;
+  document.getElementById('eci-harga-beli').value = Math.round(item.hargaBeli || 0);
+  document.getElementById('eci-harga-jual').value = Math.round(getCartItemBasePrice(item));
+  document.getElementById('eci-diskon-pct').value = Number((item.diskonPct || 0).toFixed(2));
+  document.getElementById('eci-diskon-rp').value = Math.round(item.diskonRp || 0);
+  document.getElementById('eci-keterangan').value = item.keterangan || '';
+  document.getElementById('eci-qty').value = item.qty;
+  updateEditCartItemSubtotal();
+  modal.style.display = 'flex';
 }
 
 function copyCartItem(cartItemId) {
@@ -267,7 +335,10 @@ function copyCartItem(cartItemId) {
 }
 
 function updateCartSummary() {
-  const subtotal = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const subtotal = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const totalDiskon = cart.reduce((s, c) => s + getCartItemDiscountValue(c), 0);
+  const totalBruto = cart.reduce((s, c) => s + (getCartItemBasePrice(c) * c.qty), 0);
+  const diskonPct = totalBruto > 0 ? (totalDiskon / totalBruto) * 100 : 0;
   const totalModal = cart.reduce((s, c) => s + (c.hargaBeli||0) * c.qty, 0);
   const totalLaba = subtotal - totalModal;
   const count = cart.reduce((s, c) => s + c.qty, 0);
@@ -289,8 +360,8 @@ function updateCartSummary() {
             <span>${fmt(subtotal)}</span>
           </div>
           <div class="cart-price-row">
-            <span><i class="fa-solid fa-tag" style="font-size:11px;margin-right:4px;color:var(--text-light);"></i>Diskon 0.00%</span>
-            <span style="color:var(--danger);">-Rp0</span>
+            <span><i class="fa-solid fa-tag" style="font-size:11px;margin-right:4px;color:var(--text-light);"></i>Diskon ${diskonPct.toFixed(2)}%</span>
+            <span style="color:var(--danger);">-${fmt(totalDiskon)}</span>
           </div>
           <div class="cart-price-row" style="margin-top:4px;">
             <span></span>
@@ -337,7 +408,7 @@ function updateCartSummary() {
 // ===== MODAL BAYAR =====
 function bukaModalBayar() {
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
-  const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
   const el = document.getElementById('bayar-total-amount');
   if (el) el.textContent = fmt(total);
   const uangEl = document.getElementById('bayar-uang');
@@ -568,7 +639,7 @@ function pilihSales(id, nama) {
 
 // ===== CHECKOUT =====
 function initCheckout() {
-  const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
   const el = document.getElementById('checkout-total-amount');
   if (el) el.textContent = fmt(total);
   selectedPayMethod = 'Tunai';
@@ -588,7 +659,7 @@ function selectPayMethod(el, method) {
 }
 
 function setNominalCepat(val, pas = false) {
-  const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
   // Try modal input first, fallback to old checkout input
   const input = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
   if (!input) return;
@@ -597,7 +668,7 @@ function setNominalCepat(val, pas = false) {
 }
 
 function hitungKembalian() {
-  const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
   const input = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
   const bayar = parseFloat(input?.value) || 0;
   const kembalian = bayar - total;
@@ -610,7 +681,7 @@ function hitungKembalian() {
 
 function prosesCheckout() {
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
-  const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
   if (selectedPayMethod === 'Tunai') {
     const input = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
     const bayar = parseFloat(input?.value) || 0;
@@ -629,7 +700,7 @@ function simpanDraft() {
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
   _isCartSubmitting = true;
   
-  const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
   const transaksi = {
     id: 'trx_' + Date.now(),
     tanggal: cartForm.tglTransaksi ? cartForm.tglTransaksi + 'T' + new Date().toTimeString().slice(0,8) : new Date().toISOString(),
@@ -640,7 +711,7 @@ function simpanDraft() {
     jenisPenjualan: cartForm.jenisPenjualan || '',
     salesId: cartForm.salesId,
     sales: cartForm.salesNama || '',
-    items: [...cart],
+    items: cart.map(item => ({ ...syncCartItemComputedValues({ ...item }) })),
     total,
     metodePembayaran: 'Draft',
     catatan: cartForm.catatan.trim() || '',
@@ -667,10 +738,11 @@ function simpanDraft() {
       produkId: item.productId,
       nama: item.nama,
       harga: item.harga,
+      hargaAsli: item.baseHarga || item.harga,
       hargaBeli: item.hargaBeli || 0,
       qty: item.qty,
       unit: item.unit || 'Pcs',
-      subtotal: item.qty * item.harga,
+      subtotal: getCartItemSubtotal(item),
       createdAt: new Date().toISOString(),
     });
   });
@@ -688,7 +760,7 @@ function simpanDraft() {
 function _simpanTransaksi(metode) {
   if (_isCartSubmitting) return;
   _isCartSubmitting = true;
-  const total = cart.reduce((s, c) => s + c.qty * c.harga, 0);
+  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
   const bayarInput = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
   const bayar = metode === 'Tunai' ? (parseFloat(bayarInput?.value) || 0) : total;
   const transaksi = {
@@ -701,7 +773,7 @@ function _simpanTransaksi(metode) {
     jenisPenjualan: cartForm.jenisPenjualan || '',
     salesId: cartForm.salesId,
     sales: cartForm.salesNama || '',
-    items: [...cart],
+    items: cart.map(item => ({ ...syncCartItemComputedValues({ ...item }) })),
     total,
     metodePembayaran: metode,
     catatan: cartForm.catatan.trim() || '',
@@ -736,10 +808,11 @@ function _simpanTransaksi(metode) {
       produkId: item.productId,
       nama: item.nama,
       harga: item.harga,
+      hargaAsli: item.baseHarga || item.harga,
       hargaBeli: item.hargaBeli || 0,
       qty: item.qty,
       unit: item.unit || 'Pcs',
-      subtotal: item.qty * item.harga,
+      subtotal: getCartItemSubtotal(item),
       createdAt: new Date().toISOString(),
     });
   });
@@ -788,9 +861,10 @@ function renderStruk(trx) {
       <td class="struk-td-no">${i+1}</td>
       <td class="struk-td-nama">
         <div style="font-weight:600;">${c.nama}</div>
-        <div style="color:#666;font-size:11px;">${c.qty} x ${fmt(c.harga)}</div>
+        <div style="color:#666;font-size:11px;">${c.qty} x ${fmt(c.baseHarga || c.harga)}</div>
+        ${c.keterangan ? `<div style="color:#999;font-size:10px;">${c.keterangan}</div>` : ''}
       </td>
-      <td class="struk-td-sub">${fmt(c.qty * c.harga)}</td>
+      <td class="struk-td-sub">${fmt(getCartItemSubtotal(c))}</td>
     </tr>`).join('');
 
   const totalQty = trx.items.reduce((s, c) => s + c.qty, 0);
@@ -889,7 +963,7 @@ function shareStruk() {
   const trx = _lastTrx;
   const outlet = DB.getObj('outlet');
   const tgl = new Date(trx.tanggal).toLocaleString('id-ID');
-  const items = trx.items.map(c => `â€¢ ${c.nama} x${c.qty} = ${fmt(c.qty * c.harga)}`).join('\n');
+  const items = trx.items.map(c => `â€¢ ${c.nama} x${c.qty} = ${fmt(getCartItemSubtotal(c))}`).join('\n');
   const text = `*${outlet.nama || 'KONCOPOS'}*\n`
     + `Tanggal: ${tgl}\n`
     + `---\n${items}\n---\n`
@@ -910,7 +984,7 @@ function shareWhatsapp() {
   const trx = _lastTrx;
   const outlet = DB.getObj('outlet');
   const tgl = new Date(trx.tanggal).toLocaleString('id-ID');
-  const items = trx.items.map(c => `â€¢ ${c.nama} x${c.qty} = ${fmt(c.qty * c.harga)}`).join('%0A');
+  const items = trx.items.map(c => `â€¢ ${c.nama} x${c.qty} = ${fmt(getCartItemSubtotal(c))}`).join('%0A');
   const text = encodeURIComponent(
     `*${outlet.nama || 'KONCOPOS'}*\n`
     + `Tanggal: ${tgl}\n`
@@ -921,6 +995,88 @@ function shareWhatsapp() {
     + `\n${outlet.catatan || 'Terima kasih!'}`
   );
   window.open('https://wa.me/?text=' + text, '_blank');
+}
+
+function tutupModalEditCartItem() {
+  const modal = document.getElementById('modal-edit-cart-item');
+  if (modal) modal.style.display = 'none';
+}
+
+function updateEditCartItemSubtotal(source = '') {
+  const qty = Math.max(1, parseInt(document.getElementById('eci-qty')?.value, 10) || 1);
+  const hargaJual = Math.max(0, Number(document.getElementById('eci-harga-jual')?.value) || 0);
+  let diskonPct = Math.max(0, Number(document.getElementById('eci-diskon-pct')?.value) || 0);
+  let diskonRp = Math.max(0, Number(document.getElementById('eci-diskon-rp')?.value) || 0);
+  const gross = hargaJual * qty;
+
+  if (source === 'pct') {
+    diskonRp = Math.round(gross * (diskonPct / 100));
+    document.getElementById('eci-diskon-rp').value = diskonRp;
+  } else if (source === 'rp') {
+    diskonRp = Math.min(gross, diskonRp);
+    diskonPct = gross > 0 ? (diskonRp / gross) * 100 : 0;
+    document.getElementById('eci-diskon-pct').value = Number(diskonPct.toFixed(2));
+  } else {
+    diskonRp = Math.min(gross, diskonRp);
+    if (gross > 0 && diskonPct > 0) {
+      diskonRp = Math.round(gross * (diskonPct / 100));
+      document.getElementById('eci-diskon-rp').value = diskonRp;
+    } else {
+      diskonPct = gross > 0 ? (diskonRp / gross) * 100 : 0;
+      document.getElementById('eci-diskon-pct').value = Number(diskonPct.toFixed(2));
+    }
+  }
+
+  const subtotal = Math.max(0, gross - diskonRp);
+  document.getElementById('eci-qty').value = qty;
+  const subtotalEl = document.getElementById('eci-subtotal');
+  if (subtotalEl) subtotalEl.value = fmt(subtotal);
+}
+
+function changeEditCartQty(delta) {
+  const input = document.getElementById('eci-qty');
+  if (!input) return;
+  const nextQty = Math.max(1, (parseInt(input.value, 10) || 1) + delta);
+  input.value = nextQty;
+  updateEditCartItemSubtotal();
+}
+
+function simpanEditCartItem() {
+  const cartItemId = document.getElementById('eci-cart-item-id')?.value;
+  const item = cart.find(c => c.cartItemId === cartItemId);
+  if (!item) return;
+
+  const qty = Math.max(1, parseInt(document.getElementById('eci-qty')?.value, 10) || 1);
+  const hargaBeli = Math.max(0, Number(document.getElementById('eci-harga-beli')?.value) || 0);
+  const baseHarga = Math.max(0, Number(document.getElementById('eci-harga-jual')?.value) || 0);
+  const diskonPct = Math.max(0, Number(document.getElementById('eci-diskon-pct')?.value) || 0);
+  const diskonRp = Math.max(0, Number(document.getElementById('eci-diskon-rp')?.value) || 0);
+  const gross = baseHarga * qty;
+  const finalDiskonRp = Math.min(gross, Math.round(diskonRp));
+  const subtotal = Math.max(0, gross - finalDiskonRp);
+
+  Object.assign(item, {
+    qty,
+    hargaBeli,
+    baseHarga,
+    diskonPct: gross > 0 ? (finalDiskonRp / gross) * 100 : 0,
+    diskonRp: finalDiskonRp,
+    subtotal,
+    harga: qty > 0 ? subtotal / qty : baseHarga,
+    keterangan: document.getElementById('eci-keterangan')?.value.trim() || '',
+  });
+  syncCartItemComputedValues(item);
+  tutupModalEditCartItem();
+  updateCartBar();
+  renderCartScreen();
+  showToast('Item keranjang diperbarui');
+}
+
+function hapusDariModalEditCartItem() {
+  const cartItemId = document.getElementById('eci-cart-item-id')?.value;
+  if (!cartItemId) return;
+  tutupModalEditCartItem();
+  removeCartItem(cartItemId);
 }
 
 // ===== SCREEN INIT LISTENER =====
@@ -1099,4 +1255,5 @@ function hapusLogTransaksi(id) {
   renderLogTransaksi();
   showToast('Transaksi dihapus');
 }
+
 
