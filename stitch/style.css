@@ -4332,12 +4332,16 @@ body {
   background: linear-gradient(180deg, #fff7f8 0%, #ffffff 180px);
 }
 
-#cart-list,
 #cart-price-summary,
 #cart-modal-laba,
 #cart-form-section {
   margin-left: 12px;
   margin-right: 12px;
+}
+
+#cart-list {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 #cart-price-summary,
@@ -4361,14 +4365,18 @@ body {
 }
 
 .cart-header-row {
-  padding: 0 4px 8px;
+  padding: 0 16px 8px;
   color: var(--text-mid);
 }
 
 .cart-item {
-  border-radius: 18px;
-  border: 1px solid #f2e8ec;
-  box-shadow: 0 8px 18px rgba(30, 24, 39, 0.05);
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid #f2e8ec;
+  box-shadow: none;
+  margin: 0;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .cart-form-card {
