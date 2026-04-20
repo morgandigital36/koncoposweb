@@ -706,6 +706,37 @@ body {
   padding: 4px 0 16px;
 }
 
+.cart-settings-form {
+  background: transparent;
+  margin-top: 2px;
+}
+
+.cart-setting-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-setting-tax-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 76px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #ece8ef;
+}
+
+.cart-setting-tax-input {
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
 .btn-simpan {
   width: 100%;
   background: var(--primary);
@@ -4377,6 +4408,11 @@ body {
   margin: 0;
   padding-left: 16px;
   padding-right: 16px;
+}
+
+.cart-qty-spacer {
+  width: 30px;
+  height: 30px;
 }
 
 .cart-form-card {

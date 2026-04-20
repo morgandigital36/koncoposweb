@@ -1,49 +1,85 @@
 <div class="topbar">
-  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('pos')" style="font-size:18px;"></i>
-  <span class="topbar-title" style="flex:1;text-align:center;">Pengaturan Tampilan</span>
+  <i class="fa-solid fa-arrow-left topbar-icon" onclick="switchScreen('keranjang')" style="font-size:18px;"></i>
+  <span class="topbar-title" style="flex:1;text-align:center;">Pengaturan Keranjang</span>
   <span style="width:24px;"></span>
 </div>
 <div class="screen-content">
-  <div class="pos-settings-form">
+  <div class="cart-settings-form">
     <div class="pos-setting-row">
-      <label>Mode Tampilan</label>
-      <div class="pos-setting-select-wrap">
-        <select class="pos-setting-select" id="ps-mode">
-          <option>Tampil Semua</option><option>Stok Ada</option><option>Favorit</option>
-        </select>
+      <label>Tampil Diskon</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-diskon" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="pos-setting-row">
+      <label>Tampil Pajak</label>
+      <div class="cart-setting-inline">
+        <div class="cart-setting-tax-wrap">
+          <input type="number" id="cs-tax-percent" class="cart-setting-tax-input" min="0" step="0.01" />
+          <span>%</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="cs-show-pajak" />
+          <span class="toggle-slider"></span>
+        </label>
       </div>
     </div>
     <div class="pos-setting-row">
-      <label>Jenis Tampilan</label>
-      <div class="pos-setting-select-wrap">
-        <select class="pos-setting-select" id="ps-jenis">
-          <option>List</option><option>Grid</option>
-        </select>
-      </div>
+      <label>Tampil Ongkos Kirim</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-ongkir" />
+        <span class="toggle-slider"></span>
+      </label>
     </div>
     <div class="pos-setting-row">
-      <label>Stok Produk</label>
-      <div class="pos-setting-select-wrap">
-        <select class="pos-setting-select" id="ps-stok">
-          <option>Auto</option><option>Tampil</option><option>Sembunyikan</option>
-        </select>
-      </div>
+      <label>Tampil Pelanggan</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-pelanggan" />
+        <span class="toggle-slider"></span>
+      </label>
     </div>
     <div class="pos-setting-row">
-      <label>Kategori</label>
-      <div class="pos-setting-select-wrap">
-        <select class="pos-setting-select" id="ps-kategori">
-          <option>Kesamping</option><option>Kebawah</option><option>Sembunyikan</option>
-        </select>
-      </div>
+      <label>Tampil No. Meja</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-no-meja" />
+        <span class="toggle-slider"></span>
+      </label>
     </div>
     <div class="pos-setting-row">
-      <label>Urutan Produk</label>
-      <div class="pos-setting-select-wrap">
-        <select class="pos-setting-select" id="ps-urutan">
-          <option>Abjad</option><option>Terbaru</option><option>Terlama</option>
-        </select>
-      </div>
+      <label>Tampil Jenis Penjualan</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-jenis-penjualan" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="pos-setting-row">
+      <label>Tampil Sales</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-sales" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="pos-setting-row">
+      <label>Tampil Modal dan Laba</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-modal-laba" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="pos-setting-row">
+      <label>Tampil Up Down</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-updown" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="pos-setting-row">
+      <label>Tampil Copy</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="cs-show-copy" />
+        <span class="toggle-slider"></span>
+      </label>
     </div>
   </div>
   <div class="pos-settings-footer">

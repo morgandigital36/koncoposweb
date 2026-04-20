@@ -595,26 +595,63 @@ function getPosSettings() {
   return { ...DEFAULT_POS_SETTINGS, ...saved };
 }
 
+const DEFAULT_CART_SETTINGS = {
+  showDiskon: true,
+  showPajak: false,
+  taxPercent: 11,
+  showOngkir: false,
+  ongkir: 0,
+  showPelanggan: true,
+  showNoMeja: true,
+  showJenisPenjualan: true,
+  showSales: true,
+  showModalLaba: true,
+  showUpDown: true,
+  showCopy: true,
+};
+
+function getCartSettings() {
+  const saved = DB.getObj('cartSettings');
+  return { ...DEFAULT_CART_SETTINGS, ...saved };
+}
+
 function initPosSettings() {
-  const cfg = getPosSettings();
-  setVal('ps-mode', cfg.mode);
-  setVal('ps-jenis', cfg.jenis);
-  setVal('ps-stok', cfg.stok);
-  setVal('ps-kategori', cfg.kategori);
-  setVal('ps-urutan', cfg.urutan);
+  const cfg = getCartSettings();
+  const setChecked = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = !!value;
+  };
+  setChecked('cs-show-diskon', cfg.showDiskon);
+  setChecked('cs-show-pajak', cfg.showPajak);
+  setVal('cs-tax-percent', cfg.taxPercent ?? 11);
+  setChecked('cs-show-ongkir', cfg.showOngkir);
+  setChecked('cs-show-pelanggan', cfg.showPelanggan);
+  setChecked('cs-show-no-meja', cfg.showNoMeja);
+  setChecked('cs-show-jenis-penjualan', cfg.showJenisPenjualan);
+  setChecked('cs-show-sales', cfg.showSales);
+  setChecked('cs-show-modal-laba', cfg.showModalLaba);
+  setChecked('cs-show-updown', cfg.showUpDown);
+  setChecked('cs-show-copy', cfg.showCopy);
 }
 
 function simpanPosSettings() {
   const data = {
-    mode: document.getElementById('ps-mode')?.value || DEFAULT_POS_SETTINGS.mode,
-    jenis: document.getElementById('ps-jenis')?.value || DEFAULT_POS_SETTINGS.jenis,
-    stok: document.getElementById('ps-stok')?.value || DEFAULT_POS_SETTINGS.stok,
-    kategori: document.getElementById('ps-kategori')?.value || DEFAULT_POS_SETTINGS.kategori,
-    urutan: document.getElementById('ps-urutan')?.value || DEFAULT_POS_SETTINGS.urutan,
+    showDiskon: !!document.getElementById('cs-show-diskon')?.checked,
+    showPajak: !!document.getElementById('cs-show-pajak')?.checked,
+    taxPercent: Math.max(0, Number(document.getElementById('cs-tax-percent')?.value) || 0),
+    showOngkir: !!document.getElementById('cs-show-ongkir')?.checked,
+    ongkir: 0,
+    showPelanggan: !!document.getElementById('cs-show-pelanggan')?.checked,
+    showNoMeja: !!document.getElementById('cs-show-no-meja')?.checked,
+    showJenisPenjualan: !!document.getElementById('cs-show-jenis-penjualan')?.checked,
+    showSales: !!document.getElementById('cs-show-sales')?.checked,
+    showModalLaba: !!document.getElementById('cs-show-modal-laba')?.checked,
+    showUpDown: !!document.getElementById('cs-show-updown')?.checked,
+    showCopy: !!document.getElementById('cs-show-copy')?.checked,
   };
-  DB.setObj('posSettings', data);
-  showToast('Pengaturan POS disimpan!');
-  switchScreen('pos');
+  DB.setObj('cartSettings', data);
+  showToast('Pengaturan keranjang disimpan!');
+  switchScreen('keranjang');
 }
 
 // ===== HAPUS DATA =====

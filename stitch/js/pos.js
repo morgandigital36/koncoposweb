@@ -15,6 +15,25 @@ function getActivePosSettings() {
     : { mode: 'Tampil Semua', jenis: 'List', stok: 'Auto', kategori: 'Kesamping', urutan: 'Abjad' };
 }
 
+function getActiveCartSettings() {
+  return typeof getCartSettings === 'function'
+    ? getCartSettings()
+    : {
+        showDiskon: true,
+        showPajak: false,
+        taxPercent: 11,
+        showOngkir: false,
+        ongkir: 0,
+        showPelanggan: true,
+        showNoMeja: true,
+        showJenisPenjualan: true,
+        showSales: true,
+        showModalLaba: true,
+        showUpDown: true,
+        showCopy: true,
+      };
+}
+
 function applyPosSettings() {
   const cfg = getActivePosSettings();
   posViewMode = (cfg.jenis || 'List').toLowerCase() === 'grid' ? 'grid' : 'list';
@@ -181,6 +200,18 @@ function getCartItemSubtotal(item) {
   return Math.max(0, baseHarga * qty - getCartItemDiscountValue(item));
 }
 
+function getCartPricingSummary() {
+  const settings = getActiveCartSettings();
+  const subtotal = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const totalDiskon = cart.reduce((s, c) => s + getCartItemDiscountValue(c), 0);
+  const totalBruto = cart.reduce((s, c) => s + (getCartItemBasePrice(c) * c.qty), 0);
+  const diskonPct = totalBruto > 0 ? (totalDiskon / totalBruto) * 100 : 0;
+  const pajak = settings.showPajak ? Math.round(subtotal * ((Number(settings.taxPercent) || 0) / 100)) : 0;
+  const ongkir = settings.showOngkir ? Math.max(0, Number(settings.ongkir) || 0) : 0;
+  const total = subtotal + pajak + ongkir;
+  return { settings, subtotal, totalDiskon, totalBruto, diskonPct, pajak, ongkir, total };
+}
+
 function syncCartItemComputedValues(item) {
   if (!item) return item;
   const qty = Math.max(1, parseInt(item.qty, 10) || 1);
@@ -222,7 +253,7 @@ function addToCart(productId) {
 
 function updateCartBar() {
   const totalItems = cart.reduce((s, c) => s + c.qty, 0);
-  const totalHarga = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const totalHarga = getCartPricingSummary().total;
   const countEl = document.getElementById('cartCount');
   const totalEl = document.getElementById('cartTotal');
   if (countEl) countEl.textContent = totalItems + ' Items';
@@ -262,6 +293,7 @@ function removeCartItem(cartItemId) {
 function renderCartScreen() {
   const container = document.getElementById('cart-list');
   if (!container) return;
+  const cartSettings = getActiveCartSettings();
 
   if (cart.length === 0) {
     container.innerHTML = `<div class="pos-empty-state">
@@ -274,7 +306,7 @@ function renderCartScreen() {
   }
 
   container.innerHTML = `
-    <p style="font-size:12px;color:var(--primary);font-weight:600;margin-bottom:6px;">*Klik produk untuk edit qty, gunakan copy untuk split baris.</p>
+    <p style="font-size:12px;color:var(--primary);font-weight:600;margin-bottom:6px;">*Klik produk untuk edit qty${cartSettings.showCopy ? ', gunakan copy untuk split baris.' : '.'}</p>
     <div class="cart-header-row">
       <span>Produk</span><span>Subtotal</span>
     </div>
@@ -287,26 +319,32 @@ function renderCartScreen() {
       return `
     <div class="cart-item" onclick="editCartItem('${c.cartItemId}')">
       <div class="cart-item-qty-col">
+        ${cartSettings.showUpDown ? `
         <button class="cart-qty-btn-sm" onclick="event.stopPropagation();changeQty('${c.cartItemId}',1)">
           <i class="fa-solid fa-chevron-up"></i>
         </button>
+        ` : `<div class="cart-qty-spacer"></div>`}
         <div class="cart-item-photo">
           <span>${c.nama.substring(0,2).toUpperCase()}</span>
         </div>
+        ${cartSettings.showUpDown ? `
         <button class="cart-qty-btn-sm" onclick="event.stopPropagation();changeQty('${c.cartItemId}',-1)">
           <i class="fa-solid fa-chevron-down"></i>
         </button>
+        ` : `<div class="cart-qty-spacer"></div>`}
       </div>
       <div class="cart-item-info">
         <div class="cart-item-nama">${c.nama}</div>
         <div class="cart-item-harga">${c.qty} ${c.unit} x ${fmt(getCartItemBasePrice(c))}</div>
-        <div class="cart-item-modal">Modal: <span style="color:var(--primary);">${fmt(c.hargaBeli||0)}</span>, Laba: <span style="color:var(--primary);">${fmt(totalLaba)}</span></div>
-        ${hasDiscount ? `<div class="cart-item-edit-note">Diskon ${c.diskonPct > 0 ? `${Number(c.diskonPct.toFixed(2))}%` : ''}${c.diskonPct > 0 ? ' Â· ' : ''}${fmt(c.diskonRp || 0)}</div>` : ''}
+        ${cartSettings.showModalLaba ? `<div class="cart-item-modal">Modal: <span style="color:var(--primary);">${fmt(c.hargaBeli||0)}</span>, Laba: <span style="color:var(--primary);">${fmt(totalLaba)}</span></div>` : ''}
+        ${cartSettings.showDiskon && hasDiscount ? `<div class="cart-item-edit-note">Diskon ${c.diskonPct > 0 ? `${Number(c.diskonPct.toFixed(2))}%` : ''}${c.diskonPct > 0 ? ' · ' : ''}${fmt(c.diskonRp || 0)}</div>` : ''}
         ${c.keterangan ? `<div class="cart-item-edit-note">${c.keterangan}</div>` : ''}
         <div class="cart-item-actions-row">
+          ${cartSettings.showCopy ? `
           <div class="cart-item-copy" onclick="event.stopPropagation();copyCartItem('${c.cartItemId}')">
             <i class="fa-regular fa-copy"></i> Copy
           </div>
+          ` : ''}
           <button class="cart-item-remove" onclick="event.stopPropagation();removeCartItem('${c.cartItemId}')" title="Hapus item">
             <i class="fa-solid fa-trash"></i> Hapus
           </button>
@@ -349,20 +387,15 @@ function copyCartItem(cartItemId) {
 }
 
 function updateCartSummary() {
-  const subtotal = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
-  const totalDiskon = cart.reduce((s, c) => s + getCartItemDiscountValue(c), 0);
-  const totalBruto = cart.reduce((s, c) => s + (getCartItemBasePrice(c) * c.qty), 0);
-  const diskonPct = totalBruto > 0 ? (totalDiskon / totalBruto) * 100 : 0;
-  const totalModal = cart.reduce((s, c) => s + (c.hargaBeli||0) * c.qty, 0);
+  const { settings, subtotal, totalDiskon, diskonPct, pajak, ongkir, total } = getCartPricingSummary();
+  const totalModal = cart.reduce((s, c) => s + (c.hargaBeli || 0) * c.qty, 0);
   const totalLaba = subtotal - totalModal;
   const count = cart.reduce((s, c) => s + c.qty, 0);
   const isEmpty = cart.length === 0;
 
-  // Topbar total
   const topbarTotal = document.getElementById('cart-topbar-total');
-  if (topbarTotal) topbarTotal.textContent = fmt(subtotal);
+  if (topbarTotal) topbarTotal.textContent = fmt(total);
 
-  // Summary block
   const summary = document.getElementById('cart-price-summary');
   if (summary) {
     summary.style.display = isEmpty ? 'none' : '';
@@ -373,25 +406,28 @@ function updateCartSummary() {
             <span>${count} Items</span>
             <span>${fmt(subtotal)}</span>
           </div>
+          ${settings.showDiskon ? `
           <div class="cart-price-row">
             <span><i class="fa-solid fa-tag" style="font-size:11px;margin-right:4px;color:var(--text-light);"></i>Diskon ${diskonPct.toFixed(2)}%</span>
             <span style="color:var(--danger);">-${fmt(totalDiskon)}</span>
-          </div>
+          </div>` : ''}
           <div class="cart-price-row" style="margin-top:4px;">
             <span></span>
             <span style="font-weight:700;font-size:14px;">${fmt(subtotal)}</span>
           </div>
+          ${settings.showPajak ? `
           <div class="cart-price-row" style="color:var(--text-mid);font-size:13px;">
             <span><i class="fa-solid fa-receipt" style="margin-right:6px;"></i>Pajak</span>
-            <span>Rp0</span>
-          </div>
+            <span>${fmt(pajak)}</span>
+          </div>` : ''}
+          ${settings.showOngkir ? `
           <div class="cart-price-row" style="color:var(--text-mid);font-size:13px;">
             <span><i class="fa-solid fa-truck" style="margin-right:6px;"></i>Ongkos Kirim</span>
-            <span>Rp0</span>
-          </div>
+            <span>${fmt(ongkir)}</span>
+          </div>` : ''}
           <div class="cart-price-row cart-price-total">
             <span>Total</span>
-            <span>${fmt(subtotal)}</span>
+            <span>${fmt(total)}</span>
           </div>
           <button class="cart-clear-btn" onclick="clearCart()">
             <i class="fa-solid fa-trash-can"></i> Kosongkan keranjang
@@ -400,11 +436,10 @@ function updateCartSummary() {
     }
   }
 
-  // Modal & Laba
   const modalLaba = document.getElementById('cart-modal-laba');
   if (modalLaba) {
-    modalLaba.style.display = isEmpty ? 'none' : '';
-    if (!isEmpty) {
+    modalLaba.style.display = (isEmpty || !settings.showModalLaba) ? 'none' : '';
+    if (!isEmpty && settings.showModalLaba) {
       const tmEl = document.getElementById('cart-total-modal');
       const tlEl = document.getElementById('cart-total-laba');
       if (tmEl) tmEl.textContent = fmt(totalModal);
@@ -412,17 +447,25 @@ function updateCartSummary() {
     }
   }
 
-  // Form & footer
   const formSection = document.getElementById('cart-form-section');
   const footer = document.getElementById('cart-footer');
   if (formSection) formSection.style.display = isEmpty ? 'none' : '';
   if (footer) footer.style.display = isEmpty ? 'none' : '';
+
+  const pelangganItem = document.getElementById('cart-form-pelanggan');
+  const mejaItem = document.getElementById('cart-form-no-meja');
+  const jenisItem = document.getElementById('cart-form-jenis-penjualan');
+  const salesItem = document.getElementById('cart-form-sales');
+  if (pelangganItem) pelangganItem.style.display = settings.showPelanggan ? '' : 'none';
+  if (mejaItem) mejaItem.style.display = settings.showNoMeja ? '' : 'none';
+  if (jenisItem) jenisItem.style.display = settings.showJenisPenjualan ? '' : 'none';
+  if (salesItem) salesItem.style.display = settings.showSales ? '' : 'none';
 }
 
 // ===== MODAL BAYAR =====
 function bukaModalBayar() {
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
-  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const total = getCartPricingSummary().total;
   const el = document.getElementById('bayar-total-amount');
   if (el) el.textContent = fmt(total);
   const uangEl = document.getElementById('bayar-uang');
@@ -653,7 +696,7 @@ function pilihSales(id, nama) {
 
 // ===== CHECKOUT =====
 function initCheckout() {
-  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const total = getCartPricingSummary().total;
   const el = document.getElementById('checkout-total-amount');
   if (el) el.textContent = fmt(total);
   selectedPayMethod = 'Tunai';
@@ -673,7 +716,7 @@ function selectPayMethod(el, method) {
 }
 
 function setNominalCepat(val, pas = false) {
-  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const total = getCartPricingSummary().total;
   // Try modal input first, fallback to old checkout input
   const input = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
   if (!input) return;
@@ -682,7 +725,7 @@ function setNominalCepat(val, pas = false) {
 }
 
 function hitungKembalian() {
-  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const total = getCartPricingSummary().total;
   const input = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
   const bayar = parseFloat(input?.value) || 0;
   const kembalian = bayar - total;
@@ -709,7 +752,7 @@ function validatePiutangCheckout() {
 
 function prosesCheckout() {
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
-  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const total = getCartPricingSummary().total;
   if (selectedPayMethod === 'Piutang' && !validatePiutangCheckout()) return;
   if (selectedPayMethod === 'Tunai') {
     const input = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
@@ -730,7 +773,7 @@ function simpanDraft() {
   if (cart.length === 0) { showToast('Keranjang kosong!'); return; }
   _isCartSubmitting = true;
   
-  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const total = getCartPricingSummary().total;
   const transaksi = {
     id: 'trx_' + Date.now(),
     tanggal: cartForm.tglTransaksi ? cartForm.tglTransaksi + 'T' + new Date().toTimeString().slice(0,8) : new Date().toISOString(),
@@ -790,7 +833,7 @@ function simpanDraft() {
 function _simpanTransaksi(metode) {
   if (_isCartSubmitting) return;
   _isCartSubmitting = true;
-  const total = cart.reduce((s, c) => s + getCartItemSubtotal(c), 0);
+  const total = getCartPricingSummary().total;
   const bayarInput = document.getElementById('bayar-uang') || document.getElementById('checkout-bayar');
   const bayar = metode === 'Tunai' ? (parseFloat(bayarInput?.value) || 0) : total;
   const transaksi = {
@@ -1291,5 +1334,9 @@ function hapusLogTransaksi(id) {
   renderLogTransaksi();
   showToast('Transaksi dihapus');
 }
+
+
+
+
 
 

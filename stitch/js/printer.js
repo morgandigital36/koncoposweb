@@ -31,16 +31,124 @@ const BT_CHAR_UUID     = '00002af1-0000-1000-8000-00805f9b34fb';
 // Fallback: some printers use serial port profile
 const BT_SPP_SERVICE   = '00001101-0000-1000-8000-00805f9b34fb';
 
+function getPrinterConfig() {
+  return DB.getObj('printer');
+}
+
+function getPrinterItemSubtotal(item) {
+  if (typeof getCartItemSubtotal === 'function') return getCartItemSubtotal(item);
+  return (Number(item.qty) || 0) * (Number(item.harga) || 0);
+}
+
+function getPrinterGrossAmount(item) {
+  const qty = Number(item.qty) || 0;
+  const baseHarga = Number(item.baseHarga ?? item.harga ?? 0) || 0;
+  return qty * baseHarga;
+}
+
+function getPrinterDiscountAmount(item) {
+  const gross = getPrinterGrossAmount(item);
+  const rawDiscount = Number(item.diskonRp ?? 0) || 0;
+  return Math.max(0, Math.min(gross, rawDiscount));
+}
+
+function getPrinterInvoiceNumber(trx) {
+  const tgl = new Date(trx.tanggal);
+  return 'INV-' + tgl.getFullYear().toString().slice(2)
+    + String(tgl.getMonth() + 1).padStart(2, '0')
+    + String(tgl.getDate()).padStart(2, '0')
+    + String((DB.get('transaksi') || []).length).padStart(4, '0');
+}
+
+function setBluetoothStatus(message, color = '', buttonLabel = '', buttonColor = '') {
+  const statusEl = document.getElementById('printer-bt-status');
+  const btn = document.getElementById('printer-bt-btn');
+  if (statusEl) {
+    statusEl.textContent = message;
+    statusEl.style.color = color || 'var(--text-light)';
+  }
+  if (btn && buttonLabel) {
+    btn.innerHTML = buttonLabel;
+    btn.style.background = buttonColor;
+  }
+}
+
+function canUseBluetooth() {
+  if (!window.isSecureContext) {
+    showToast('Bluetooth hanya bisa dipakai di HTTPS atau localhost.');
+    setBluetoothStatus('Buka aplikasi lewat HTTPS untuk izin Bluetooth', 'var(--danger)');
+    return false;
+  }
+  if (!navigator.bluetooth) {
+    showToast('Web Bluetooth tidak didukung browser ini. Gunakan Chrome/Edge Android.');
+    setBluetoothStatus('Browser ini belum mendukung Web Bluetooth', 'var(--danger)');
+    return false;
+  }
+  return true;
+}
+
+async function connectToBluetoothDevice(device) {
+  if (!device) throw new Error('Perangkat Bluetooth tidak ditemukan');
+
+  const server = await device.gatt.connect();
+  let char;
+
+  try {
+    const service = await server.getPrimaryService(BT_SERVICE_UUID);
+    char = await service.getCharacteristic(BT_CHAR_UUID);
+  } catch {
+    const services = await server.getPrimaryServices();
+    if (services.length === 0) throw new Error('Tidak ada service printer ditemukan');
+    for (const srv of services) {
+      const chars = await srv.getCharacteristics();
+      char = chars.find(c => c.properties.write || c.properties.writeWithoutResponse);
+      if (char) break;
+    }
+    if (!char) throw new Error('Tidak ada characteristic printer yang bisa ditulis');
+  }
+
+  _btDevice = device;
+  _btChar = char;
+
+  const printerData = getPrinterConfig();
+  printerData.btName = device.name || printerData.btName || 'Printer Bluetooth';
+  printerData.btId = device.id || printerData.btId || '';
+  DB.setObj('printer', printerData);
+
+  const nameEl = document.getElementById('printer-bt-name');
+  if (nameEl) nameEl.textContent = printerData.btName;
+  setBluetoothStatus('Terhubung', '#2ecc71', '<i class="fa-solid fa-link"></i> Terhubung', '#2ecc71');
+
+  device.addEventListener('gattserverdisconnected', handleBluetoothDisconnect);
+  return char;
+}
+
+function handleBluetoothDisconnect() {
+  _btDevice = null;
+  _btChar = null;
+  setBluetoothStatus('Printer terputus, tap Scan untuk sambungkan lagi', 'var(--danger)', '<i class="fa-solid fa-bluetooth"></i> Scan');
+}
+
+async function restoreBluetoothConnection() {
+  if (!canUseBluetooth()) return false;
+  if (_btChar && _btDevice?.gatt?.connected) return true;
+  if (!navigator.bluetooth.getDevices) return false;
+
+  const printerData = getPrinterConfig();
+  const devices = await navigator.bluetooth.getDevices();
+  const device = devices.find(d => (printerData.btId && d.id === printerData.btId) || (printerData.btName && d.name === printerData.btName));
+  if (!device) return false;
+  await connectToBluetoothDevice(device);
+  return true;
+}
+
 // ===== SCAN & CONNECT =====
 async function scanBluetoothPrinter() {
-  if (!navigator.bluetooth) {
-    showToast('Web Bluetooth tidak didukung browser ini. Gunakan Chrome/Edge.');
-    return;
-  }
+  if (!canUseBluetooth()) return;
   const btn = document.getElementById('printer-bt-btn');
   const nameEl = document.getElementById('printer-bt-name');
-  const statusEl = document.getElementById('printer-bt-status');
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scan...'; }
+  setBluetoothStatus('Meminta izin Bluetooth...');
 
   try {
     const device = await navigator.bluetooth.requestDevice({
@@ -52,54 +160,29 @@ async function scanBluetoothPrinter() {
         { namePrefix: 'MTP' },
         { namePrefix: 'Xprinter' },
         { namePrefix: 'BlueTooth' },
+        { namePrefix: 'BT' }
       ],
-      optionalServices: [BT_SERVICE_UUID, BT_SPP_SERVICE],
+      optionalServices: [BT_SERVICE_UUID, BT_SPP_SERVICE]
     });
 
     if (nameEl) nameEl.textContent = device.name || 'Printer Bluetooth';
-    if (statusEl) statusEl.textContent = 'Menghubungkan...';
-
-    const server = await device.gatt.connect();
-    let service, char;
-
-    // Try primary service
-    try {
-      service = await server.getPrimaryService(BT_SERVICE_UUID);
-      char = await service.getCharacteristic(BT_CHAR_UUID);
-    } catch {
-      // Fallback: get first available service
-      const services = await server.getPrimaryServices();
-      if (services.length === 0) throw new Error('Tidak ada service ditemukan');
-      service = services[0];
-      const chars = await service.getCharacteristics();
-      char = chars.find(c => c.properties.write || c.properties.writeWithoutResponse);
-      if (!char) throw new Error('Tidak ada characteristic write');
-    }
-
-    _btDevice = device;
-    _btChar   = char;
-
-    // Save device name
-    const printerData = DB.getObj('printer');
-    printerData.btName = device.name || 'Printer Bluetooth';
-    printerData.btId   = device.id;
-    DB.setObj('printer', printerData);
-
-    if (nameEl) nameEl.textContent = device.name || 'Printer Bluetooth';
-    if (statusEl) { statusEl.textContent = 'Terhubung âœ“'; statusEl.style.color = '#2ecc71'; }
-    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-link"></i> Terhubung'; btn.style.background = '#2ecc71'; }
-
-    device.addEventListener('gattserverdisconnected', () => {
-      _btDevice = null; _btChar = null;
-      if (statusEl) { statusEl.textContent = 'Terputus'; statusEl.style.color = 'var(--danger)'; }
-      if (btn) { btn.innerHTML = '<i class="fa-solid fa-bluetooth"></i> Scan'; btn.style.background = ''; }
-    });
-
+    setBluetoothStatus('Menghubungkan...');
+    await connectToBluetoothDevice(device);
     showToast('Printer terhubung: ' + (device.name || 'Bluetooth'));
   } catch (e) {
-    if (e.name !== 'NotFoundError') showToast('Gagal: ' + e.message);
-    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-bluetooth"></i> Scan'; }
-    if (statusEl) statusEl.textContent = 'Tap untuk scan printer';
+    if (e.name === 'NotFoundError') {
+      setBluetoothStatus('Belum ada printer dipilih');
+    } else if (e.name === 'SecurityError') {
+      showToast('Izin Bluetooth ditolak. Izinkan akses perangkat lalu coba lagi.');
+      setBluetoothStatus('Izin Bluetooth ditolak', 'var(--danger)');
+    } else {
+      showToast('Gagal Bluetooth: ' + e.message);
+      setBluetoothStatus('Gagal menghubungkan printer Bluetooth', 'var(--danger)');
+    }
+    return;
+  } finally {
+    if (btn) btn.disabled = false;
+    if (btn && !_btChar) btn.innerHTML = '<i class="fa-solid fa-bluetooth"></i> Scan';
   }
 }
 
@@ -141,7 +224,7 @@ function cols(left, right, width) {
 
 // ===== BUILD INVOICE BYTES =====
 function buildInvoiceBytes(trx) {
-  const cfg = DB.getObj('printer');
+  const cfg = getPrinterConfig();
   const outlet = DB.getObj('outlet');
   const width = cfg.ukuran === '58' ? 32 : 42;
   const bytes = [];
@@ -169,7 +252,7 @@ function buildInvoiceBytes(trx) {
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit'
   });
-  push(line('No: ' + trx.id.replace('trx_', '')));
+  push(line('No: ' + getPrinterInvoiceNumber(trx)));
   if (cfg.tampilTglBayar !== 'tidak') push(line('Tgl: ' + tgl));
   if (trx.pelanggan) push(line('Pelanggan: ' + trx.pelanggan));
   if (trx.noMeja) push(line('Meja: ' + trx.noMeja));
@@ -181,8 +264,9 @@ function buildInvoiceBytes(trx) {
   // Items
   trx.items.forEach(item => {
     const nama = item.nama.substring(0, width - 10);
-    const harga = fmt(item.harga).replace('Rp', '');
-    const subtotal = fmt(item.qty * item.harga).replace('Rp', '');
+    const harga = fmt(item.baseHarga || item.harga).replace('Rp', '');
+    const subtotal = fmt(getPrinterItemSubtotal(item)).replace('Rp', '');
+    const diskon = getPrinterDiscountAmount(item);
 
     if (cfg.posisiQty === 'belakang') {
       // Nama x Qty
@@ -198,6 +282,8 @@ function buildInvoiceBytes(trx) {
     }
 
     if (cfg.tampilSatuan === 'ya') push(line('  Satuan: ' + (item.unit || 'Pcs')));
+    if (diskon > 0) push(line('  Diskon: ' + fmt(diskon).replace('Rp', 'Rp ')));
+    if (item.keterangan) push(line('  Ket: ' + item.keterangan.substring(0, width - 2)));
   });
 
   push(divider(width, '-'));
@@ -223,7 +309,7 @@ function buildInvoiceBytes(trx) {
   // Footer
   push(CMD.ALIGN_CENTER);
   if (cfg.tampilHemat === 'ya') {
-    const hemat = trx.items.reduce((s, i) => s + (i.diskonRp || 0) * i.qty, 0);
+    const hemat = trx.items.reduce((s, i) => s + getPrinterDiscountAmount(i), 0);
     if (hemat > 0) push(line('Anda hemat ' + fmt(hemat)));
   }
   if (outlet.catatan) push(line(outlet.catatan.substring(0, width)));
@@ -244,31 +330,23 @@ let _lastTrx = null;
 async function cetakStruk() {
   if (!_lastTrx) { showToast('Tidak ada data transaksi'); return; }
 
-  const cfg = DB.getObj('printer');
+  const cfg = getPrinterConfig();
   const btn = document.getElementById('struk-btn-print');
 
   // Check if BT connected
   if (!_btChar || !_btDevice?.gatt?.connected) {
-    // Try to reconnect if we have saved device
-    if (_btDevice) {
-      try {
-        showToast('Menghubungkan ulang...');
-        const server = await _btDevice.gatt.connect();
-        const services = await server.getPrimaryServices();
-        const service = services[0];
-        const chars = await service.getCharacteristics();
-        _btChar = chars.find(c => c.properties.write || c.properties.writeWithoutResponse);
-      } catch (e) {
-        _btChar = null;
-      }
+    try {
+      showToast('Mengecek koneksi printer...');
+      await restoreBluetoothConnection();
+    } catch (e) {
+      _btChar = null;
     }
 
     if (!_btChar) {
-      // Offer fallback: browser print
       if (confirm('Printer Bluetooth belum terhubung.\n\nCetak via browser (PDF/Print)?')) {
         cetakViaBrowser(_lastTrx);
       } else {
-        showToast('Hubungkan printer di Pengaturan â†’ Printer');
+        showToast('Hubungkan printer di Pengaturan > Printer');
       }
       return;
     }
@@ -282,7 +360,6 @@ async function cetakStruk() {
     showToast('Struk berhasil dicetak!');
   } catch (e) {
     showToast('Gagal cetak: ' + e.message);
-    // Fallback to browser print
     if (confirm('Gagal cetak Bluetooth.\nCetak via browser?')) {
       cetakViaBrowser(_lastTrx);
     }
@@ -293,17 +370,18 @@ async function cetakStruk() {
 
 // ===== FALLBACK: BROWSER PRINT =====
 function cetakViaBrowser(trx) {
-  const cfg = DB.getObj('printer');
+  const cfg = getPrinterConfig();
   const outlet = DB.getObj('outlet');
   const width = cfg.ukuran === '58' ? '58mm' : '80mm';
   const tgl = new Date(trx.tanggal).toLocaleString('id-ID');
+  const invoiceNo = getPrinterInvoiceNumber(trx);
 
   const itemsHtml = trx.items.map(item => `
     <tr>
       <td>${item.nama}</td>
       <td style="text-align:center;">${item.qty}</td>
-      <td style="text-align:right;">${fmt(item.harga)}</td>
-      <td style="text-align:right;">${fmt(item.qty * item.harga)}</td>
+      <td style="text-align:right;">${fmt(item.baseHarga || item.harga)}</td>
+      <td style="text-align:right;">${fmt(getPrinterItemSubtotal(item))}</td>
     </tr>`).join('');
 
   const html = `<!DOCTYPE html>
@@ -326,10 +404,12 @@ function cetakViaBrowser(trx) {
   ${outlet.alamat && cfg.tampilAlamat === 'ya' ? `<p class="center">${outlet.alamat}</p>` : ''}
   ${outlet.telp ? `<p class="center">Telp: ${outlet.telp}</p>` : ''}
   <div class="divider"></div>
-  <p>No: ${trx.id.replace('trx_', '')}</p>
+  <p>No: ${invoiceNo}</p>
   ${cfg.tampilTglBayar !== 'tidak' ? `<p>Tgl: ${tgl}</p>` : ''}
   ${trx.pelanggan ? `<p>Pelanggan: ${trx.pelanggan}</p>` : ''}
   ${trx.noMeja ? `<p>Meja: ${trx.noMeja}</p>` : ''}
+  ${trx.sales ? `<p>Sales: ${trx.sales}</p>` : ''}
+  ${trx.tglJthTempo ? `<p>Jth Tempo: ${new Date(trx.tglJthTempo).toLocaleDateString('id-ID')}</p>` : ''}
   <div class="divider"></div>
   <table>
     <thead><tr><th style="text-align:left;">Produk</th><th>Qty</th><th style="text-align:right;">Harga</th><th style="text-align:right;">Sub</th></tr></thead>
@@ -357,7 +437,7 @@ async function testPrint() {
     showToast('Hubungkan printer terlebih dahulu');
     return;
   }
-  const cfg = DB.getObj('printer');
+  const cfg = getPrinterConfig();
   const width = cfg.ukuran === '58' ? 32 : 42;
   const bytes = [
     ...CMD.INIT,
@@ -403,19 +483,20 @@ function setPrinterMode(mode) {
 }
 
 function initPengaturanPrinter() {
-  const cfg = DB.getObj('printer');
+  const cfg = getPrinterConfig();
 
   // Mode
   setPrinterMode(cfg.mode || 'manual');
 
   // BT status
   const nameEl = document.getElementById('printer-bt-name');
-  const statusEl = document.getElementById('printer-bt-status');
-  const btn = document.getElementById('printer-bt-btn');
   if (cfg.btName && nameEl) nameEl.textContent = cfg.btName;
   if (_btChar && _btDevice?.gatt?.connected) {
-    if (statusEl) { statusEl.textContent = 'Terhubung âœ“'; statusEl.style.color = '#2ecc71'; }
-    if (btn) { btn.innerHTML = '<i class="fa-solid fa-link"></i> Terhubung'; btn.style.background = '#2ecc71'; }
+    setBluetoothStatus('Terhubung', '#2ecc71', '<i class="fa-solid fa-link"></i> Terhubung', '#2ecc71');
+  } else if (cfg.btName) {
+    setBluetoothStatus('Printer tersimpan, tap Scan untuk izinkan sambung lagi');
+  } else {
+    setBluetoothStatus('Tap untuk scan printer');
   }
 
   // Settings
@@ -438,7 +519,7 @@ function initPengaturanPrinter() {
 }
 
 function simpanPengaturanPrinter() {
-  const cfg = DB.getObj('printer');
+  const cfg = getPrinterConfig();
   cfg.cashDrawer     = document.getElementById('ps-cash-drawer')?.value || 'tidak';
   cfg.autoCut        = document.getElementById('ps-auto-cut')?.value    || 'tidak';
   cfg.ukuran         = document.getElementById('ps-ukuran')?.value      || '58';
@@ -458,4 +539,12 @@ function simpanPengaturanPrinter() {
 document.addEventListener('screenInit', (e) => {
   if (e.detail.name === 'pengaturan-printer') initPengaturanPrinter();
 });
+
+
+
+
+
+
+
+
 
