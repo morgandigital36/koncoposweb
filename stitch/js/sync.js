@@ -68,6 +68,10 @@ function getActiveGasConfigItem() {
   return config.urls.find(item => item.id === config.activeId) || null;
 }
 
+function getGasWorkspaceLabel(item) {
+  return item?.id ? `dbns::${item.id}` : 'default';
+}
+
 function getConfiguredGasUrl() {
   return getActiveGasConfigItem()?.url || GAS_URL || '';
 }
@@ -450,6 +454,7 @@ function renderGasUrlList() {
           </button>
         </div>
         <div class="sync-url-item-link">${escapeHtml(item.url)}</div>
+        <div class="sync-url-item-link">Workspace: <strong>${escapeHtml(getGasWorkspaceLabel(item))}</strong></div>
         <div class="sync-url-item-actions">
           <button class="sync-url-action" type="button" onclick="editGASUrl('${item.id}')">Edit</button>
           <button class="sync-url-action" type="button" onclick="testKoneksiGASTersimpan('${item.id}')">Tes</button>
@@ -464,11 +469,14 @@ function renderGasUrlList() {
 
 function pilihGASUrlAktif(id) {
   const config = getGasConfig();
-  if (!config.urls.some(item => item.id === id)) return;
+  const target = config.urls.find(item => item.id === id);
+  if (!target) return;
+  const current = getActiveGasConfigItem();
+  if (current?.id === id) return;
   config.activeId = id;
   saveGasConfig(config);
-  showSyncToast('OK URL aktif diperbarui!');
-  initSyncSettings();
+  showSyncToast('OK URL aktif diperbarui. Workspace outlet ikut berpindah.');
+  setTimeout(() => location.reload(), 250);
 }
 
 function editGASUrl(id) {
@@ -511,6 +519,7 @@ function initSyncSettings() {
   const urlEl     = document.getElementById('sync-gas-url');
   const statusEl  = document.getElementById('sync-status-text');
   const lastSyncEl= document.getElementById('sync-last-time');
+  const workspaceEl = document.getElementById('sync-active-workspace');
   const config    = getGasConfig();
   const active    = getActiveGasConfigItem();
   if (nameEl) nameEl.value = '';
@@ -524,6 +533,9 @@ function initSyncSettings() {
       ? `Aktif: ${active.name} (OK)`
       : (config.urls.length ? 'Pilih URL aktif' : 'Belum dikonfigurasi');
     statusEl.style.color = active ? '#2ecc71' : '#f39c12';
+  }
+  if (workspaceEl) {
+    workspaceEl.textContent = `Workspace lokal: ${getGasWorkspaceLabel(active)}`;
   }
   renderGasUrlList();
   updateSyncIndicatorBig();

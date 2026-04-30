@@ -3,11 +3,71 @@
 // ===================================================
 
 // ===== STORAGE =====
+const GLOBAL_DB_KEYS = new Set(['gasConfig', 'printer', 'session']);
+const DB_NAMESPACE_PREFIX = 'dbns::';
+
+function _readRawStorage(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || fallback);
+  } catch (e) {
+    return JSON.parse(fallback);
+  }
+}
+
+function _getRawGasConfig() {
+  return _readRawStorage('gasConfig', '{}');
+}
+
+function getActiveDbNamespace() {
+  const gasConfig = _getRawGasConfig();
+  const activeId = String(gasConfig?.activeId || '').trim();
+  return activeId ? `${DB_NAMESPACE_PREFIX}${activeId}::` : '';
+}
+
+function getStorageKey(key) {
+  return GLOBAL_DB_KEYS.has(key) ? key : `${getActiveDbNamespace()}${key}`;
+}
+
+function hasStorageKey(key) {
+  return localStorage.getItem(getStorageKey(key)) !== null || localStorage.getItem(key) !== null;
+}
+
+function migrateLegacyDataToNamespace() {
+  const namespace = getActiveDbNamespace();
+  if (!namespace) return;
+
+  const migrationFlag = `${namespace}__migrated__`;
+  if (localStorage.getItem(migrationFlag) === '1') return;
+
+  Object.keys(localStorage).forEach((rawKey) => {
+    if (GLOBAL_DB_KEYS.has(rawKey)) return;
+    if (rawKey.startsWith(DB_NAMESPACE_PREFIX)) return;
+    const targetKey = `${namespace}${rawKey}`;
+    if (localStorage.getItem(targetKey) === null) {
+      localStorage.setItem(targetKey, localStorage.getItem(rawKey));
+    }
+  });
+
+  localStorage.setItem(migrationFlag, '1');
+}
+
 const DB = {
-  get:    (key) => JSON.parse(localStorage.getItem(key) || '[]'),
-  set:    (key, val) => localStorage.setItem(key, JSON.stringify(val)),
-  getObj: (key) => JSON.parse(localStorage.getItem(key) || '{}'),
-  setObj: (key, val) => localStorage.setItem(key, JSON.stringify(val)),
+  get(key) {
+    if (!GLOBAL_DB_KEYS.has(key)) migrateLegacyDataToNamespace();
+    return _readRawStorage(getStorageKey(key), '[]');
+  },
+  set(key, val) {
+    if (!GLOBAL_DB_KEYS.has(key)) migrateLegacyDataToNamespace();
+    localStorage.setItem(getStorageKey(key), JSON.stringify(val));
+  },
+  getObj(key) {
+    if (!GLOBAL_DB_KEYS.has(key)) migrateLegacyDataToNamespace();
+    return _readRawStorage(getStorageKey(key), '{}');
+  },
+  setObj(key, val) {
+    if (!GLOBAL_DB_KEYS.has(key)) migrateLegacyDataToNamespace();
+    localStorage.setItem(getStorageKey(key), JSON.stringify(val));
+  },
 };
 
 // ===== ROUTER =====
