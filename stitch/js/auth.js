@@ -6,6 +6,38 @@
 let _currentUser  = null;
 let _sessionToken = null;
 
+function simpanGasUrlDariRegister(url, namaUsaha = '') {
+  const trimmedUrl = String(url || '').trim();
+  if (!trimmedUrl) return;
+
+  const gasConfig = (typeof getGasConfig === 'function')
+    ? getGasConfig()
+    : (DB.getObj('gasConfig') || {});
+  const urls = Array.isArray(gasConfig.urls) ? [...gasConfig.urls] : [];
+  const existing = urls.find(item => item.url === trimmedUrl);
+  const activeId = existing?.id
+    || (typeof createGasConfigId === 'function' ? createGasConfigId() : `gas-${Date.now()}`);
+
+  const nextItem = existing || {
+    id: activeId,
+    name: namaUsaha || `URL ${urls.length + 1}`,
+    url: trimmedUrl,
+  };
+
+  if (!existing) urls.push(nextItem);
+  if (existing && namaUsaha) existing.name = namaUsaha;
+
+  const nextConfig = {
+    ...gasConfig,
+    urls,
+    activeId,
+    url: trimmedUrl,
+  };
+
+  if (typeof saveGasConfig === 'function') saveGasConfig(nextConfig);
+  else DB.setObj('gasConfig', nextConfig);
+}
+
 // ============================================================
 // INIT — Cek session saat app dibuka
 // ============================================================
@@ -110,6 +142,7 @@ async function doRegister() {
   const jenisUsaha = document.getElementById('reg-jenis')?.value;
   const telp       = document.getElementById('reg-telp')?.value.trim();
   const email      = document.getElementById('reg-email')?.value.trim();
+  const gasUrl     = document.getElementById('reg-gas-url')?.value.trim();
   const password   = document.getElementById('reg-password')?.value;
   const konfirmasi = document.getElementById('reg-konfirmasi')?.value;
   const errEl      = document.getElementById('register-error');
@@ -120,6 +153,10 @@ async function doRegister() {
   if (!namaUsaha)  { _showAuthError(errEl, 'Nama usaha wajib diisi'); return; }
   if (!jenisUsaha) { _showAuthError(errEl, 'Pilih jenis usaha'); return; }
   if (!email)      { _showAuthError(errEl, 'Email wajib diisi'); return; }
+  if (!gasUrl)     { _showAuthError(errEl, 'URL Google Apps Script wajib diisi'); return; }
+  if (!gasUrl.startsWith('https://script.google.com')) {
+    _showAuthError(errEl, 'URL Google Apps Script tidak valid'); return;
+  }
   if (!password)   { _showAuthError(errEl, 'Password wajib diisi'); return; }
   if (password.length < 6) { _showAuthError(errEl, 'Password minimal 6 karakter'); return; }
   if (password !== konfirmasi) { _showAuthError(errEl, 'Konfirmasi password tidak cocok'); return; }
@@ -129,6 +166,7 @@ async function doRegister() {
   _hideAuthError(errEl);
 
   try {
+    simpanGasUrlDariRegister(gasUrl, namaUsaha);
     const result = await gasRequest({
       body: { action: 'register', namaLengkap: nama, namaUsaha, jenisUsaha, telp, email, password }
     });
@@ -149,6 +187,16 @@ async function doRegister() {
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="fa-solid fa-user-plus" style="margin-right:6px;"></i>Daftar Sekarang';
+  }
+}
+
+function initRegisterScreen() {
+  const urlEl = document.getElementById('reg-gas-url');
+  if (!urlEl) return;
+  if (typeof getConfiguredGasUrl === 'function') {
+    urlEl.value = getConfiguredGasUrl() || '';
+  } else {
+    urlEl.value = DB.getObj('gasConfig').url || '';
   }
 }
 
@@ -257,3 +305,7 @@ async function authRequest(params) {
   }
   return gasRequest(params);
 }
+
+document.addEventListener('screenInit', (e) => {
+  if (e.detail.name === 'register') initRegisterScreen();
+});

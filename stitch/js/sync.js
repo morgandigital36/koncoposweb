@@ -146,6 +146,22 @@ async function pingGasUrl(customUrl) {
   } catch (e) { return { ok: false, error: e.message }; }
 }
 
+async function salinCodeGS() {
+  showSyncToast('Mengambil file Code.gs...', 0);
+  try {
+    const res = await fetch('gas/Code.gs?v=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('File Code.gs tidak ditemukan');
+    const code = await res.text();
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+      throw new Error('Clipboard browser tidak tersedia');
+    }
+    await navigator.clipboard.writeText(code);
+    showSyncToast('OK Code.gs berhasil disalin!');
+  } catch (e) {
+    showSyncToast('Gagal salin Code.gs: ' + e.message, 3500, true);
+  }
+}
+
 // ============================================================
 // SETUP
 // ============================================================
