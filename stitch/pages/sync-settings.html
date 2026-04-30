@@ -19,8 +19,14 @@
   </div>
 
   <!-- URL Config -->
-  <div class="settings-group-label">URL Google Apps Script</div>
-  <div class="tp-form" style="margin-bottom:12px;">
+  <div class="settings-group-label">Daftar URL Google Apps Script</div>
+  <div class="tp-form sync-config-form">
+    <div class="tp-field-group">
+      <label class="tp-label">Nama Koneksi</label>
+      <input type="text" id="sync-gas-name" class="tp-input"
+        placeholder="Contoh: Outlet Pusat"
+        maxlength="40" />
+    </div>
     <div class="tp-field-group">
       <label class="tp-label">Web App URL</label>
       <input type="url" id="sync-gas-url" class="tp-input"
@@ -28,13 +34,17 @@
         style="font-size:11px;" />
     </div>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:16px;">
+  <div class="sync-url-actions">
     <button class="tp-outline-btn" style="flex:1;margin:0;" onclick="testKoneksiGAS()">
       <i class="fa-solid fa-plug"></i> Test Koneksi
     </button>
-    <button class="btn-simpan" style="flex:1;" onclick="simpanGASUrl()">
-      Simpan URL
+    <button class="btn-simpan" style="flex:1;" id="sync-save-btn" onclick="simpanGASUrl()">
+      Tambah URL
     </button>
+  </div>
+  <div id="sync-gas-url-list" class="sync-url-list"></div>
+  <div class="sync-url-note">
+    Anda bisa simpan beberapa URL, lalu pilih satu sebagai koneksi aktif untuk semua proses sync.
   </div>
 
   <!-- Setup -->

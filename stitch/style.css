@@ -3566,6 +3566,135 @@ body {
   margin-top: 1px;
 }
 
+.sync-config-form {
+  margin-bottom: 12px;
+}
+
+.sync-url-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sync-url-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sync-url-item,
+.sync-url-empty,
+.sync-url-note {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.sync-url-item {
+  padding: 12px;
+  border: 1px solid transparent;
+}
+
+.sync-url-item.is-active {
+  border-color: rgba(246, 95, 131, 0.35);
+  box-shadow: 0 3px 12px rgba(246, 95, 131, 0.14);
+}
+
+.sync-url-item-head,
+.sync-url-item-title-wrap,
+.sync-url-item-actions {
+  display: flex;
+  align-items: center;
+}
+
+.sync-url-item-head {
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.sync-url-item-title-wrap {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sync-url-item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.sync-url-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(246, 95, 131, 0.12);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sync-url-item-link {
+  font-size: 11px;
+  color: var(--text-light);
+  line-height: 1.5;
+  word-break: break-all;
+  margin-bottom: 10px;
+}
+
+.sync-url-item-actions {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sync-url-action {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text-dark);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sync-url-action.is-primary {
+  border-color: var(--primary);
+  background: rgba(246, 95, 131, 0.08);
+  color: var(--primary);
+}
+
+.sync-url-action.is-disabled {
+  opacity: 0.65;
+}
+
+.sync-url-delete {
+  width: 34px;
+  padding: 0;
+  color: #e74c3c;
+}
+
+.sync-url-empty,
+.sync-url-note {
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-light);
+}
+
+@media (max-width: 420px) {
+  .sync-url-actions {
+    flex-direction: column;
+  }
+
+  .sync-url-action {
+    flex: 1 1 100%;
+  }
+}
+
 /* ===== AUTH SCREENS ===== */
 .auth-screen {
   display: flex;
