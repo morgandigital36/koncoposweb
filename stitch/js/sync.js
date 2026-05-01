@@ -131,6 +131,34 @@ function getGasWorkspaceLabel(item) {
   return item?.id ? `dbns::${item.id}` : 'default';
 }
 
+async function activateGasConfigWithRelogin(config, nextActiveId, successMessage) {
+  const previousConfig = getGasConfig();
+  const nextItem = config.urls.find(item => item.id === nextActiveId);
+  if (!nextItem) {
+    showSyncToast('URL target tidak ditemukan', 2500, true);
+    return false;
+  }
+
+  config.activeId = nextActiveId;
+  saveGasConfig(config);
+
+  if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+    const relogin = (typeof reloginToConfiguredGas === 'function')
+      ? await reloginToConfiguredGas(nextItem.url, getCurrentUser()?.email || '')
+      : { ok: true };
+    if (!relogin.ok) {
+      saveGasConfig(previousConfig);
+      showSyncToast('Gagal mengaktifkan URL baru: ' + relogin.error, 4000, true);
+      initSyncSettings();
+      return false;
+    }
+  }
+
+  showSyncToast(successMessage || 'OK URL aktif diperbarui!');
+  setTimeout(() => location.reload(), 250);
+  return true;
+}
+
 function getConfiguredGasUrl(preferredOwner = '') {
   return getActiveGasConfigItem(preferredOwner)?.url || '';
 }
@@ -542,16 +570,13 @@ function renderGasUrlList() {
   }).join('');
 }
 
-function pilihGASUrlAktif(id) {
+async function pilihGASUrlAktif(id) {
   const config = getGasConfig();
   const target = config.urls.find(item => item.id === id);
   if (!target) return;
   const current = getActiveGasConfigItem();
   if (current?.id === id) return;
-  config.activeId = id;
-  saveGasConfig(config);
-  showSyncToast('OK URL aktif diperbarui. Workspace outlet ikut berpindah.');
-  setTimeout(() => location.reload(), 250);
+  await activateGasConfigWithRelogin(config, id, 'OK URL aktif diperbarui. Workspace outlet ikut berpindah.');
 }
 
 function editGASUrl(id) {
@@ -630,7 +655,7 @@ async function testKoneksiGAS() {
   else showSyncToast('Gagal koneksi: ' + r.error, 4000, true);
 }
 
-function simpanGASUrl() {
+async function simpanGASUrl() {
   const name = document.getElementById('sync-gas-name')?.value.trim();
   const url = document.getElementById('sync-gas-url')?.value.trim();
   if (!url || !url.startsWith('https://script.google.com')) {
@@ -640,15 +665,11 @@ function simpanGASUrl() {
   const itemName = name || `URL ${config.urls.length + (_editingGasUrlId ? 0 : 1)}`;
   if (_editingGasUrlId) {
     config.urls = config.urls.map(item => item.id === _editingGasUrlId ? { ...item, name: itemName, url } : item);
-    config.activeId = _editingGasUrlId;
-    saveGasConfig(config);
-    showSyncToast('OK URL diperbarui!');
+    await activateGasConfigWithRelogin(config, _editingGasUrlId, 'OK URL diperbarui dan langsung jadi aktif!');
   } else {
     const newItem = { id: createGasConfigId(), name: itemName, url };
     config.urls.push(newItem);
-    config.activeId = newItem.id;
-    saveGasConfig(config);
-    showSyncToast('OK URL ditambahkan dan langsung jadi aktif!');
+    await activateGasConfigWithRelogin(config, newItem.id, 'OK URL ditambahkan dan langsung jadi aktif!');
   }
   resetGasUrlForm();
   initSyncSettings();

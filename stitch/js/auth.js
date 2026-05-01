@@ -5,6 +5,34 @@
 // ===== SESSION STATE =====
 let _currentUser  = null;
 let _sessionToken = null;
+const LOGIN_HINT_KEY = 'loginHint';
+
+function _encodeLoginHint(value) {
+  try { return btoa(unescape(encodeURIComponent(String(value || '')))); }
+  catch (e) { return ''; }
+}
+
+function _decodeLoginHint(value) {
+  try { return decodeURIComponent(escape(atob(String(value || '')))); }
+  catch (e) { return ''; }
+}
+
+function _saveLoginHint(email, password) {
+  if (!email || !password) return;
+  DB.setObj(LOGIN_HINT_KEY, {
+    email: String(email || '').trim().toLowerCase(),
+    password: _encodeLoginHint(password),
+    savedAt: Date.now(),
+  });
+}
+
+function _getLoginHint() {
+  const saved = DB.getObj(LOGIN_HINT_KEY);
+  const email = String(saved.email || '').trim().toLowerCase();
+  const password = _decodeLoginHint(saved.password || '');
+  if (!email || !password) return null;
+  return { email, password };
+}
 
 function getHiddenGasUrlForAuth(emailHint = '') {
   if (typeof getConfiguredGasUrl === 'function') {
@@ -12,6 +40,21 @@ function getHiddenGasUrlForAuth(emailHint = '') {
     if (configured) return configured;
   }
   return typeof GAS_URL === 'string' ? GAS_URL.trim() : '';
+}
+
+async function reloginToConfiguredGas(url, emailHint = '') {
+  const hint = _getLoginHint();
+  if (!hint) return { ok: false, error: 'Password login terakhir belum tersimpan di perangkat ini.' };
+  const targetEmail = String(emailHint || hint.email || '').trim().toLowerCase();
+  const result = await gasRequest({
+    body: { action: 'login', email: targetEmail, password: hint.password }
+  }, url);
+  if (result.error) return { ok: false, error: result.error };
+  _sessionToken = result.token;
+  _currentUser = result.user;
+  _saveSession(result.token, result.user);
+  if (typeof setGasConfigDraftOwner === 'function') setGasConfigDraftOwner(targetEmail);
+  return { ok: true, user: result.user };
 }
 
 function simpanGasUrlDariRegister(url, namaUsaha = '') {
@@ -132,6 +175,7 @@ async function doLogin() {
     _sessionToken = result.token;
     _currentUser  = result.user;
     _saveSession(result.token, result.user);
+    _saveLoginHint(email, password);
 
     showToast('✓ ' + result.message);
 
@@ -196,6 +240,7 @@ async function doRegister() {
     _sessionToken = result.token;
     _currentUser  = result.user;
     _saveSession(result.token, result.user);
+    _saveLoginHint(email, password);
     if (typeof setGasConfigDraftOwner === 'function') setGasConfigDraftOwner(email);
 
     showToast('✓ ' + result.message);
@@ -240,6 +285,7 @@ function _clearSession() {
   _sessionToken = null;
   _currentUser  = null;
   DB.setObj('session', {});
+  DB.setObj(LOGIN_HINT_KEY, {});
   // Hapus semua data lokal
   const keysToKeep = ['gasConfig', 'printer'];
   const allKeys = Object.keys(localStorage);
