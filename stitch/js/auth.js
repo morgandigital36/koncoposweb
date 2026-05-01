@@ -34,6 +34,10 @@ function _getLoginHint() {
   return { email, password };
 }
 
+function _isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+}
+
 function getHiddenGasUrlForAuth(emailHint = '') {
   if (typeof getConfiguredGasUrl === 'function') {
     const configured = getConfiguredGasUrl(emailHint);
@@ -42,13 +46,46 @@ function getHiddenGasUrlForAuth(emailHint = '') {
   return typeof GAS_URL === 'string' ? GAS_URL.trim() : '';
 }
 
+function _buildRegisterPayloadForMigration(email, password) {
+  const profile = _currentUser || DB.getObj('session').user || {};
+  const outlet = DB.getObj('outlet');
+  const namaLengkap = String(profile.namaLengkap || profile.nama || 'Owner').trim();
+  const namaUsaha = String(profile.namaUsaha || outlet.nama || 'Usaha Saya').trim();
+  const jenisUsaha = String(profile.jenisUsaha || outlet.jenisUsaha || 'Warung / Toko Kelontong').trim();
+  const telp = String(profile.telp || outlet.telp || '').trim();
+  return {
+    action: 'register',
+    namaLengkap,
+    namaUsaha,
+    jenisUsaha,
+    telp,
+    email,
+    password,
+  };
+}
+
 async function reloginToConfiguredGas(url, emailHint = '') {
   const hint = _getLoginHint();
   if (!hint) return { ok: false, error: 'Password login terakhir belum tersimpan di perangkat ini.' };
-  const targetEmail = String(emailHint || hint.email || '').trim().toLowerCase();
-  const result = await gasRequest({
+  const primaryEmail = String(emailHint || '').trim().toLowerCase();
+  const fallbackEmail = String(hint.email || '').trim().toLowerCase();
+  const targetEmail = _isValidEmail(primaryEmail) ? primaryEmail : fallbackEmail;
+  if (!_isValidEmail(targetEmail)) {
+    return { ok: false, error: 'Email login terakhir tidak valid.' };
+  }
+  let result = await gasRequest({
     body: { action: 'login', email: targetEmail, password: hint.password }
   }, url);
+  if (result.error === 'Email tidak ditemukan') {
+    const registerPayload = _buildRegisterPayloadForMigration(targetEmail, hint.password);
+    const registerResult = await gasRequest({ body: registerPayload }, url);
+    if (registerResult.error && registerResult.error !== 'Email sudah terdaftar') {
+      return { ok: false, error: registerResult.error };
+    }
+    result = await gasRequest({
+      body: { action: 'login', email: targetEmail, password: hint.password }
+    }, url);
+  }
   if (result.error) return { ok: false, error: result.error };
   _sessionToken = result.token;
   _currentUser = result.user;

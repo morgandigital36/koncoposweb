@@ -3,7 +3,7 @@
 // ===================================================
 
 // ===== STORAGE =====
-const GLOBAL_DB_KEYS = new Set(['gasConfig', 'printer', 'session']);
+const GLOBAL_DB_KEYS = new Set(['gasConfig', 'printer', 'session', 'loginHint']);
 const DB_NAMESPACE_PREFIX = 'dbns::';
 
 function _readRawStorage(key, fallback) {
