@@ -346,11 +346,17 @@ function ensureDefaultOwnerAccount_() {
   var headers = data[0];
   var emailCol = headers.indexOf('email');
   var idCol = headers.indexOf('id');
+  var passwordCol = headers.indexOf('password');
+  var lastLoginCol = headers.indexOf('lastLogin');
+  var statusCol = headers.indexOf('status');
 
   for (var i = 1; i < data.length; i++) {
     if (String(data[i][emailCol]).toLowerCase() === email) {
       var existingId = data[i][idCol] || genId();
       if (!data[i][idCol]) sh.getRange(i + 1, idCol + 1).setValue(existingId);
+      if (passwordCol !== -1) sh.getRange(i + 1, passwordCol + 1).setValue(hashPw(password));
+      if (lastLoginCol !== -1) sh.getRange(i + 1, lastLoginCol + 1).setValue(new Date().toISOString());
+      if (statusCol !== -1) sh.getRange(i + 1, statusCol + 1).setValue('active');
       return { email: email, password: password, userId: existingId, created: false };
     }
   }
