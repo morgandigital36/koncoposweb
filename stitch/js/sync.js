@@ -3,6 +3,8 @@
 // ============================================================
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwXxYKfCa4DsB6T4SRZnTun4JXF7uMEewpEkeINh6dxVnZPK9mJbP8yU4NHNHRW6Mh8/exec';
+const GAS_CONFIG_DRAFT_OWNER_KEY = 'gasConfigDraftOwner';
+const GAS_CONFIG_FALLBACK_OWNER = '__legacy__';
 
 // ===== STATE =====
 let _syncStatus  = 'idle';
@@ -16,7 +18,30 @@ function createGasConfigId() {
   return 'gas-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-function normalizeGasConfig(rawConfig) {
+function normalizeGasOwnerKey(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function setGasConfigDraftOwner(value) {
+  const ownerKey = normalizeGasOwnerKey(value);
+  if (ownerKey) localStorage.setItem(GAS_CONFIG_DRAFT_OWNER_KEY, ownerKey);
+  else localStorage.removeItem(GAS_CONFIG_DRAFT_OWNER_KEY);
+}
+
+function getGasConfigDraftOwner() {
+  return normalizeGasOwnerKey(localStorage.getItem(GAS_CONFIG_DRAFT_OWNER_KEY) || '');
+}
+
+function getSessionGasOwner() {
+  const session = DB.getObj('session');
+  return normalizeGasOwnerKey(session?.user?.email || session?.user?.id || '');
+}
+
+function resolveGasConfigOwner(preferredOwner = '') {
+  return normalizeGasOwnerKey(preferredOwner) || getSessionGasOwner() || getGasConfigDraftOwner() || '';
+}
+
+function normalizeGasOwnerConfig(rawConfig) {
   const config = (rawConfig && typeof rawConfig === 'object') ? rawConfig : {};
   const rawUrls = Array.isArray(config.urls) ? config.urls : [];
   const legacyUrl = typeof config.url === 'string' ? config.url.trim() : '';
@@ -53,18 +78,52 @@ function normalizeGasConfig(rawConfig) {
   };
 }
 
-function getGasConfig() {
-  return normalizeGasConfig(DB.getObj('gasConfig'));
+function normalizeGasConfigStore(rawStore) {
+  const store = (rawStore && typeof rawStore === 'object') ? rawStore : {};
+  if (store.users && typeof store.users === 'object' && !Array.isArray(store.users)) {
+    const users = {};
+    Object.entries(store.users).forEach(([ownerKey, ownerConfig]) => {
+      const normalizedOwner = normalizeGasOwnerKey(ownerKey);
+      if (!normalizedOwner) return;
+      users[normalizedOwner] = normalizeGasOwnerConfig(ownerConfig);
+    });
+    return {
+      users,
+      lastOwnerKey: normalizeGasOwnerKey(store.lastOwnerKey || ''),
+    };
+  }
+
+  const legacyConfig = normalizeGasOwnerConfig(store);
+  return {
+    users: legacyConfig.urls.length ? { [GAS_CONFIG_FALLBACK_OWNER]: legacyConfig } : {},
+    lastOwnerKey: GAS_CONFIG_FALLBACK_OWNER,
+  };
 }
 
-function saveGasConfig(config) {
-  const normalized = normalizeGasConfig(config);
-  DB.setObj('gasConfig', normalized);
-  return normalized;
+function getGasConfigStore() {
+  return normalizeGasConfigStore(DB.getObj('gasConfig'));
 }
 
-function getActiveGasConfigItem() {
-  const config = getGasConfig();
+function getGasConfig(preferredOwner = '') {
+  const ownerKey = resolveGasConfigOwner(preferredOwner);
+  const store = getGasConfigStore();
+  if (ownerKey) return store.users[ownerKey] || normalizeGasOwnerConfig({});
+  if (!ownerKey && store.lastOwnerKey && store.users[store.lastOwnerKey]) return store.users[store.lastOwnerKey];
+  if (store.users[GAS_CONFIG_FALLBACK_OWNER]) return store.users[GAS_CONFIG_FALLBACK_OWNER];
+  return normalizeGasOwnerConfig({});
+}
+
+function saveGasConfig(config, preferredOwner = '') {
+  const ownerKey = resolveGasConfigOwner(preferredOwner) || GAS_CONFIG_FALLBACK_OWNER;
+  const store = getGasConfigStore();
+  store.users[ownerKey] = normalizeGasOwnerConfig(config);
+  store.lastOwnerKey = ownerKey;
+  DB.setObj('gasConfig', store);
+  return store.users[ownerKey];
+}
+
+function getActiveGasConfigItem(preferredOwner = '') {
+  const config = getGasConfig(preferredOwner);
   return config.urls.find(item => item.id === config.activeId) || null;
 }
 
@@ -72,12 +131,12 @@ function getGasWorkspaceLabel(item) {
   return item?.id ? `dbns::${item.id}` : 'default';
 }
 
-function getConfiguredGasUrl() {
-  return getActiveGasConfigItem()?.url || GAS_URL || '';
+function getConfiguredGasUrl(preferredOwner = '') {
+  return getActiveGasConfigItem(preferredOwner)?.url || '';
 }
 
-function hasGasConfig() {
-  return !!getActiveGasConfigItem()?.url || !!GAS_URL;
+function hasGasConfig(preferredOwner = '') {
+  return !!getActiveGasConfigItem(preferredOwner)?.url;
 }
 
 function normalizeMasterData(list) {
@@ -581,14 +640,15 @@ function simpanGASUrl() {
   const itemName = name || `URL ${config.urls.length + (_editingGasUrlId ? 0 : 1)}`;
   if (_editingGasUrlId) {
     config.urls = config.urls.map(item => item.id === _editingGasUrlId ? { ...item, name: itemName, url } : item);
+    config.activeId = _editingGasUrlId;
     saveGasConfig(config);
     showSyncToast('OK URL diperbarui!');
   } else {
     const newItem = { id: createGasConfigId(), name: itemName, url };
     config.urls.push(newItem);
-    if (!config.activeId) config.activeId = newItem.id;
+    config.activeId = newItem.id;
     saveGasConfig(config);
-    showSyncToast('OK URL ditambahkan!');
+    showSyncToast('OK URL ditambahkan dan langsung jadi aktif!');
   }
   resetGasUrlForm();
   initSyncSettings();

@@ -9,9 +9,13 @@ let _sessionToken = null;
 function simpanGasUrlDariRegister(url, namaUsaha = '') {
   const trimmedUrl = String(url || '').trim();
   if (!trimmedUrl) return;
+  const ownerKey = typeof normalizeGasOwnerKey === 'function'
+    ? normalizeGasOwnerKey(document.getElementById('reg-email')?.value.trim())
+    : '';
+  if (typeof setGasConfigDraftOwner === 'function') setGasConfigDraftOwner(ownerKey);
 
   const gasConfig = (typeof getGasConfig === 'function')
-    ? getGasConfig()
+    ? getGasConfig(ownerKey)
     : (DB.getObj('gasConfig') || {});
   const urls = Array.isArray(gasConfig.urls) ? [...gasConfig.urls] : [];
   const existing = urls.find(item => item.url === trimmedUrl);
@@ -30,11 +34,11 @@ function simpanGasUrlDariRegister(url, namaUsaha = '') {
   const nextConfig = {
     ...gasConfig,
     urls,
-    activeId,
+    activeId: nextItem.id,
     url: trimmedUrl,
   };
 
-  if (typeof saveGasConfig === 'function') saveGasConfig(nextConfig);
+  if (typeof saveGasConfig === 'function') saveGasConfig(nextConfig, ownerKey);
   else DB.setObj('gasConfig', nextConfig);
 }
 
@@ -102,9 +106,15 @@ async function doLogin() {
   _hideAuthError(errEl);
 
   try {
+    if (typeof setGasConfigDraftOwner === 'function') setGasConfigDraftOwner(email);
+    const loginUrl = typeof getConfiguredGasUrl === 'function' ? getConfiguredGasUrl(email) : '';
+    if (!loginUrl) {
+      _showAuthError(errEl, 'URL GAS untuk email ini belum tersimpan. Daftar dulu di perangkat ini.');
+      return;
+    }
     const result = await gasRequest({
       body: { action: 'login', email, password }
-    });
+    }, loginUrl);
 
     if (result.error) {
       _showAuthError(errEl, result.error);
@@ -169,7 +179,7 @@ async function doRegister() {
     simpanGasUrlDariRegister(gasUrl, namaUsaha);
     const result = await gasRequest({
       body: { action: 'register', namaLengkap: nama, namaUsaha, jenisUsaha, telp, email, password }
-    });
+    }, gasUrl);
 
     if (result.error) {
       _showAuthError(errEl, result.error);
@@ -179,6 +189,7 @@ async function doRegister() {
     _sessionToken = result.token;
     _currentUser  = result.user;
     _saveSession(result.token, result.user);
+    if (typeof setGasConfigDraftOwner === 'function') setGasConfigDraftOwner(email);
 
     showToast('✓ ' + result.message);
     _onLoginSuccess();
@@ -193,11 +204,7 @@ async function doRegister() {
 function initRegisterScreen() {
   const urlEl = document.getElementById('reg-gas-url');
   if (!urlEl) return;
-  if (typeof getConfiguredGasUrl === 'function') {
-    urlEl.value = getConfiguredGasUrl() || '';
-  } else {
-    urlEl.value = DB.getObj('gasConfig').url || '';
-  }
+  urlEl.value = '';
 }
 
 // ============================================================
