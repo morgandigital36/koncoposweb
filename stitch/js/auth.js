@@ -6,6 +6,14 @@
 let _currentUser  = null;
 let _sessionToken = null;
 
+function getHiddenGasUrlForAuth(emailHint = '') {
+  if (typeof getConfiguredGasUrl === 'function') {
+    const configured = getConfiguredGasUrl(emailHint);
+    if (configured) return configured;
+  }
+  return typeof GAS_URL === 'string' ? GAS_URL.trim() : '';
+}
+
 function simpanGasUrlDariRegister(url, namaUsaha = '') {
   const trimmedUrl = String(url || '').trim();
   if (!trimmedUrl) return;
@@ -107,9 +115,9 @@ async function doLogin() {
 
   try {
     if (typeof setGasConfigDraftOwner === 'function') setGasConfigDraftOwner(email);
-    const loginUrl = typeof getConfiguredGasUrl === 'function' ? getConfiguredGasUrl(email) : '';
+    const loginUrl = getHiddenGasUrlForAuth(email);
     if (!loginUrl) {
-      _showAuthError(errEl, 'URL GAS untuk email ini belum tersimpan. Daftar dulu di perangkat ini.');
+      _showAuthError(errEl, 'URL GAS belum tersedia untuk login.');
       return;
     }
     const result = await gasRequest({
@@ -152,7 +160,6 @@ async function doRegister() {
   const jenisUsaha = document.getElementById('reg-jenis')?.value;
   const telp       = document.getElementById('reg-telp')?.value.trim();
   const email      = document.getElementById('reg-email')?.value.trim();
-  const gasUrl     = document.getElementById('reg-gas-url')?.value.trim();
   const password   = document.getElementById('reg-password')?.value;
   const konfirmasi = document.getElementById('reg-konfirmasi')?.value;
   const errEl      = document.getElementById('register-error');
@@ -163,10 +170,6 @@ async function doRegister() {
   if (!namaUsaha)  { _showAuthError(errEl, 'Nama usaha wajib diisi'); return; }
   if (!jenisUsaha) { _showAuthError(errEl, 'Pilih jenis usaha'); return; }
   if (!email)      { _showAuthError(errEl, 'Email wajib diisi'); return; }
-  if (!gasUrl)     { _showAuthError(errEl, 'URL Google Apps Script wajib diisi'); return; }
-  if (!gasUrl.startsWith('https://script.google.com')) {
-    _showAuthError(errEl, 'URL Google Apps Script tidak valid'); return;
-  }
   if (!password)   { _showAuthError(errEl, 'Password wajib diisi'); return; }
   if (password.length < 6) { _showAuthError(errEl, 'Password minimal 6 karakter'); return; }
   if (password !== konfirmasi) { _showAuthError(errEl, 'Konfirmasi password tidak cocok'); return; }
@@ -176,10 +179,14 @@ async function doRegister() {
   _hideAuthError(errEl);
 
   try {
-    simpanGasUrlDariRegister(gasUrl, namaUsaha);
+    const registerUrl = getHiddenGasUrlForAuth(email);
+    if (!registerUrl) {
+      _showAuthError(errEl, 'URL GAS belum tersedia untuk pendaftaran.');
+      return;
+    }
     const result = await gasRequest({
       body: { action: 'register', namaLengkap: nama, namaUsaha, jenisUsaha, telp, email, password }
-    }, gasUrl);
+    }, registerUrl);
 
     if (result.error) {
       _showAuthError(errEl, result.error);
@@ -202,9 +209,7 @@ async function doRegister() {
 }
 
 function initRegisterScreen() {
-  const urlEl = document.getElementById('reg-gas-url');
-  if (!urlEl) return;
-  urlEl.value = '';
+  return;
 }
 
 // ============================================================

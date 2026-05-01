@@ -132,13 +132,16 @@ function setupDatabase() {
       ensureSheetSchema_(sh, SCHEMAS[name]);
     }
   }
+  var seededOwner = ensureDefaultOwnerAccount_();
   try {
     SpreadsheetApp.getUi().alert(
       'Setup selesai!\nDibuat: '+created.length+'\nSudah ada: '+existing.length+
+      '\nAkun default: ' + seededOwner.email +
+      '\nPassword default: owner123' +
       '\n\nLangkah deploy:\n1. Deploy > New deployment\n2. Web App\n3. Execute as: Me\n4. Access: Anyone\n5. Copy URL'
     );
   } catch(e) {}
-  return {status:'ok', created:created, existing:existing};
+  return {status:'ok', created:created, existing:existing, defaultOwner:seededOwner};
 }
 
 function ensureSheetSchema_(sh, expectedHeaders) {
@@ -333,6 +336,44 @@ function setupDefaultData(uid,usaha,jenis) {
     ['outlet_jenisUsaha',uid,'jenisUsaha',jenis,now],
     ['outlet_catatan',uid,'catatan','Terima kasih!',now]
   ].forEach(function(r){shOut.appendRow(r)});
+}
+
+function ensureDefaultOwnerAccount_() {
+  var email = 'owner@gmail.com';
+  var password = 'owner123';
+  var sh = getSheet('users');
+  var data = sh.getDataRange().getValues();
+  var headers = data[0];
+  var emailCol = headers.indexOf('email');
+  var idCol = headers.indexOf('id');
+
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][emailCol]).toLowerCase() === email) {
+      var existingId = data[i][idCol] || genId();
+      if (!data[i][idCol]) sh.getRange(i + 1, idCol + 1).setValue(existingId);
+      return { email: email, password: password, userId: existingId, created: false };
+    }
+  }
+
+  var now = new Date().toISOString();
+  var uid = genId();
+  var user = {
+    id: uid,
+    namaLengkap: 'Owner Default',
+    email: email,
+    password: hashPw(password),
+    namaUsaha: 'Usaha Default',
+    jenisUsaha: 'Warung / Toko Kelontong',
+    telp: '',
+    role: 'owner',
+    status: 'active',
+    createdAt: now,
+    lastLogin: now
+  };
+  sh.appendRow(headers.map(function(h){ return user[h] !== undefined ? user[h] : ''; }));
+  setupDefaultData(uid, user.namaUsaha, user.jenisUsaha);
+  addLog(uid, 'seed-owner', 'Users', 1, 'ok', email);
+  return { email: email, password: password, userId: uid, created: true };
 }
 
 
