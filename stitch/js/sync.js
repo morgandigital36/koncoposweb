@@ -2,7 +2,7 @@
 // SYNC v2 - Sinkronisasi LocalStorage <-> Google Sheets
 // ============================================================
 
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwXxYKfCa4DsB6T4SRZnTun4JXF7uMEewpEkeINh6dxVnZPK9mJbP8yU4NHNHRW6Mh8/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzjz47XwboaqOQp9tDDSSJ5Ke9iekUZ5PcJA_N2ZtnF7m3rkFos9hwaI_037zhJhz9P/exec';
 const GAS_CONFIG_DRAFT_OWNER_KEY = 'gasConfigDraftOwner';
 const GAS_CONFIG_FALLBACK_OWNER = '__legacy__';
 
@@ -665,4 +665,5 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('screenInit', (e) => {
   if (e.detail.name === 'sync-settings') initSyncSettings();
 });
+
 
